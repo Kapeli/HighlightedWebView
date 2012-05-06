@@ -117,7 +117,6 @@
         }
     } 
     while (foundRange.location != NSNotFound);
-    NSLog(@"found ranges %d", foundRanges.count);
 
     NSEnumerator *matchesEnumerator = [matchedTexts objectEnumerator];
     DHMatchedText *currentMatch = [matchesEnumerator nextObject];
@@ -143,8 +142,10 @@
             }
         } while (currentMatch);
     }
-    NSLog(@"found matches %d", foundMatches.count);
-    
+    for(DHMatchedText *foundMatch in foundMatches)
+    {
+        [foundMatch highlightDOMNode];
+    }
 }
 
 - (void)invalidateTimers

@@ -20,19 +20,32 @@
     {
         self.text = aText;
         self.effectiveRange = aRange;
-        self.foundRanges = [NSMutableSet set];
+        self.foundRanges = [NSMutableArray array];
     }
     return self;
 }
 
 - (void)highlightDOMNode
 {
+    if(!foundRanges.count)
+    {
+        return;
+    }
     self.originalText = [NSString stringWithString:[text data]];
+    NSString *spanContent = [text data];
+    for(int i=foundRanges.count-1; i>= 0; i--)
+    {
+        NSRange range = [[foundRanges objectAtIndex:i] rangeValue];
+        range = NSMakeRange(range.location - effectiveRange.location, range.length);
+        spanContent = [spanContent stringByReplacingCharactersInRange:range withString:[NSString stringWithFormat:@"<span style='color:red'>%@</span>", [spanContent substringWithRange:range]]];
+    }
     DOMNode *parent = [text parentNode];
     DOMDocument *document = [text ownerDocument];
-    DOMElement *span = [document createElement:@"span"];
+    DOMHTMLElement *span = (DOMHTMLElement*)[document createElement:@"span"];
     self.highlightedSpan = span;
-//    [span set
+    [span setInnerHTML:spanContent];
+    [parent insertBefore:span refChild:text];
+    [parent removeChild:text];
 }
 
 - (void)dealloc
