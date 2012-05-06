@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'HighlightedWebView' target in the 'HighlightedWebView' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif
