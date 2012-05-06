@@ -4,6 +4,12 @@
 
 @synthesize webView;
 
+- (void)controlTextDidChange:(NSNotification *)obj
+{
+    NSTextView *field = [[obj userInfo] objectForKey:@"NSFieldEditor"];
+    [webView highlightQuery:[field string] caseSensitive:NO];
+}
+
 - (IBAction)search:(id)sender
 {
     NSString *query = [sender stringValue];

@@ -19,5 +19,6 @@
 + (DHMatchedText *)matchedTextWithDOMText:(DOMText *)aText andRange:(NSRange)aRange;
 - (id)initWithDOMText:(DOMText *)aText andRange:(NSRange)aRange;
 - (void)highlightDOMNode;
+- (void)clearHighlight;
 
 @end

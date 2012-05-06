@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		431FBA56155694F70012103F /* NSString+GTM.m in Sources */ = {isa = PBXBuildFile; fileRef = 431FBA55155694F70012103F /* NSString+GTM.m */; };
 		43F7F3821554F75D00879D86 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43F7F3811554F75D00879D86 /* Cocoa.framework */; };
 		43F7F38C1554F75D00879D86 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 43F7F38A1554F75D00879D86 /* InfoPlist.strings */; };
 		43F7F38E1554F75D00879D86 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 43F7F38D1554F75D00879D86 /* main.m */; };
@@ -20,6 +21,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		431FBA54155694F70012103F /* NSString+GTM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+GTM.h"; sourceTree = "<group>"; };
+		431FBA55155694F70012103F /* NSString+GTM.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+GTM.m"; sourceTree = "<group>"; };
 		43F7F37D1554F75D00879D86 /* HighlightedWebView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HighlightedWebView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		43F7F3811554F75D00879D86 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		43F7F3841554F75D00879D86 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -103,6 +106,8 @@
 				43F7F3AF155508BB00879D86 /* DHSearchQuery.m */,
 				43F7F3B8155566D700879D86 /* DHMatchedText.h */,
 				43F7F3B9155566D700879D86 /* DHMatchedText.m */,
+				431FBA54155694F70012103F /* NSString+GTM.h */,
+				431FBA55155694F70012103F /* NSString+GTM.m */,
 				43F7F3961554F75D00879D86 /* MainMenu.xib */,
 				43F7F3881554F75D00879D86 /* Supporting Files */,
 			);
@@ -190,6 +195,7 @@
 				43F7F3A01554F77000879D86 /* DHWebView.m in Sources */,
 				43F7F3B0155508BB00879D86 /* DHSearchQuery.m in Sources */,
 				43F7F3BA155566D700879D86 /* DHMatchedText.m in Sources */,
+				431FBA56155694F70012103F /* NSString+GTM.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -309,6 +315,7 @@
 				43F7F39D1554F75D00879D86 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

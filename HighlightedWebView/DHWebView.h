@@ -4,7 +4,7 @@
 
 @interface DHWebView : WebView {
     BOOL usesTimer;
-    NSTimer *traverseTimer;
+    NSTimer *workerTimer;
     NSTimeInterval timerInterval;
     DHSearchQuery *currentQuery;
     NSMutableArray *highlightedMatches;
@@ -13,13 +13,14 @@
 }
 
 @property (assign) BOOL usesTimer;
-@property (retain) NSTimer *traverseTimer;
+@property (retain) NSTimer *workerTimer;
 @property (assign) NSTimeInterval timerInterval;
 @property (retain) DHSearchQuery *currentQuery;
 @property (retain) NSMutableArray *highlightedMatches;
 @property (retain) NSMutableArray *matchedTexts;
 @property (retain) NSMutableString *entirePageContent;
 
+- (void)highlightQuery:(NSString *)aQuery caseSensitive:(BOOL)isCaseSensitive;
 - (void)highlightQuery:(DHSearchQuery *)query;
 - (void)traverseNodes:(NSMutableArray *)nodes;
 - (void)highlightMatches;

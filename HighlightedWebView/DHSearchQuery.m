@@ -15,7 +15,7 @@
     self = [super init];
     if(self) 
     {
-        self.query = aQuery;
+        self.query = [NSString stringWithString:aQuery];
         self.isCaseSensitive = caseSensitive;
     }
     return self;

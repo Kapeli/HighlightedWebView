@@ -6,15 +6,15 @@
 @synthesize usesTimer;
 @synthesize timerInterval;
 @synthesize currentQuery;
-@synthesize traverseTimer;
+@synthesize workerTimer;
 @synthesize highlightedMatches;
 @synthesize matchedTexts;
 @synthesize entirePageContent;
 
 - (void)awakeFromNib
 {
-    timerInterval = 0.005f;
-    usesTimer = NO;
+    timerInterval = 0.01f;
+    usesTimer = YES;
 }
 
 - (BOOL)searchFor:(NSString *)string direction:(BOOL)forward caseSensitive:(BOOL)caseFlag wrap:(BOOL)wrapFlag
@@ -28,6 +28,12 @@
     return result;
 }
 
+- (void)highlightQuery:(NSString *)aQuery caseSensitive:(BOOL)isCaseSensitive
+{
+    DHSearchQuery *query = [DHSearchQuery searchQueryWithQuery:aQuery caseSensitive:isCaseSensitive];
+    [self highlightQuery:query];
+}
+
 - (void)highlightQuery:(DHSearchQuery *)query
 {
     if([currentQuery isEqualTo:query])
@@ -35,25 +41,40 @@
         return;
     }
     self.currentQuery = query;
-    DOMDocument *document = [[self mainFrame] DOMDocument];
+    [self startClearingHighlights];
+}
+
+- (void)startClearingHighlights
+{
+    [self invalidateTimers];
     [self clearHighlights];
-    self.matchedTexts = [NSMutableArray array];
-    self.entirePageContent = [NSMutableString string];
-    [self traverseNodes:[NSMutableArray arrayWithObject:[document body]]];
 }
 
 - (void)clearHighlights
 {
-//    [self invalidateTimers];
-//    for(DOMNode *node in highlightedNodes)
-//    {
-//        DOMNode *parent = [node parentNode];
-//        DOMText *previous = (DOMText *)[node previousSibling];
-//        NSString *data = [node textContent];
-//        [parent removeChild:node];
-//        [previous appendData:data];
-//    }
-//    self.highlightedNodes = [NSMutableArray array];
+    for(int i = 0; i < 1000; i++)
+    {
+        if(!highlightedMatches.count)
+        {
+            self.highlightedMatches = [NSMutableArray array];
+            self.matchedTexts = [NSMutableArray array];
+            self.entirePageContent = [NSMutableString string];
+            if(!currentQuery.query.length)
+            {
+                return;
+            }
+            DOMDocument *document = [[self mainFrame] DOMDocument];
+            NSLog(@"start");
+            [self traverseNodes:[NSMutableArray arrayWithObject:[document body]]];
+            return;
+        }
+        DHMatchedText *match = [highlightedMatches objectAtIndex:0];
+        [match retain];
+        [highlightedMatches removeObjectAtIndex:0];
+        [match clearHighlight];
+        [match release];
+    }
+    self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:timerInterval target:self selector:@selector(clearHighlights) userInfo:nil repeats:NO];
 }
 
 - (void)traverseNodes:(NSMutableArray *)nodes
@@ -62,10 +83,12 @@
     {
         if(!nodes.count)
         {
+            NSLog(@"end");
             [self highlightMatches];
             return;
         }
         DOMNode *node = [nodes objectAtIndex:0];
+        [node retain];
         [nodes removeObjectAtIndex:0];
         if(node.nodeType == DOM_TEXT_NODE)
         {
@@ -75,7 +98,7 @@
             [entirePageContent appendString:content];
             [matchedTexts addObject:matchedText];
         }
-        if([node hasChildNodes])
+        if([node isKindOfClass:[DOMElement class]])
         {
             DOMNodeList *childNodes = [node childNodes];
             for(int i = 0; i < childNodes.length; i++)
@@ -83,11 +106,11 @@
                 [nodes insertObject:[childNodes item:i] atIndex:i];
             }
         }
+        [node release];
     }
     if(usesTimer)
     {
-        [self invalidateTimers];
-        self.traverseTimer = [NSTimer scheduledTimerWithTimeInterval:timerInterval target:self selector:@selector(traverseWithTimer:) userInfo:nodes repeats:NO];
+        self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:timerInterval target:self selector:@selector(traverseWithTimer:) userInfo:nodes repeats:NO];
     }
     else
     {
@@ -142,19 +165,43 @@
             }
         } while (currentMatch);
     }
-    for(DHMatchedText *foundMatch in foundMatches)
+    [self timeredHighlightOfMatches:[NSMutableArray arrayWithArray:[foundMatches allObjects]]];
+}
+
+- (void)timeredHighlightOfMatches:(NSMutableArray *)matches
+{
+    if([matches isKindOfClass:[NSTimer class]])
     {
-        [foundMatch highlightDOMNode];
+        matches = [(NSTimer*)matches userInfo];
+    }
+    for(int i = 0; i < 1000; i++)
+    {
+        if(!matches.count)
+        {
+            return;
+        }
+        DHMatchedText *last = [matches lastObject];
+        [highlightedMatches addObject:last];
+        [matches removeLastObject];
+        [last highlightDOMNode];
+    }
+    if(usesTimer)
+    {
+        self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:timerInterval target:self selector:@selector(timeredHighlightOfMatches:) userInfo:matches repeats:NO];
+    }
+    else
+    {
+        [self timeredHighlightOfMatches:matches];
     }
 }
 
 - (void)invalidateTimers
 {
-    if([self.traverseTimer isValid])
+    if([self.workerTimer isValid])
     {
-        [traverseTimer invalidate];
+        [workerTimer invalidate];
     }
-    self.traverseTimer = nil;
+    self.workerTimer = nil;
 }
 
 - (void)dealloc
