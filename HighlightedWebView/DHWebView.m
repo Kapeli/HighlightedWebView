@@ -3,7 +3,6 @@
 
 @implementation DHWebView
 
-@synthesize usesTimer;
 @synthesize timerInterval;
 @synthesize currentQuery;
 @synthesize workerTimer;
@@ -14,7 +13,6 @@
 - (void)awakeFromNib
 {
     timerInterval = 0.01f;
-    usesTimer = YES;
 }
 
 - (BOOL)searchFor:(NSString *)string direction:(BOOL)forward caseSensitive:(BOOL)caseFlag wrap:(BOOL)wrapFlag
@@ -65,6 +63,10 @@
             }
             DOMDocument *document = [self mainFrameDocument];
             DOMHTMLElement *body = [document body];
+            if(!body)
+            {
+                return;
+            }
             [self traverseNodes:[NSMutableArray arrayWithObject:body]];
             return;
         }
@@ -83,7 +85,6 @@
     {
         if(!nodes.count)
         {
-            NSLog(@"end");
             [self highlightMatches];
             return;
         }
@@ -116,14 +117,7 @@
         }
         [node release];
     }
-    if(usesTimer)
-    {
-        self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:timerInterval target:self selector:@selector(traverseWithTimer:) userInfo:nodes repeats:NO];
-    }
-    else
-    {
-        [self traverseNodes:nodes];
-    }
+    self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:timerInterval target:self selector:@selector(traverseWithTimer:) userInfo:nodes repeats:NO];
 }
 
 - (void)traverseWithTimer:(NSTimer *)timer
@@ -189,7 +183,7 @@
     {
         matches = [(NSTimer*)matches userInfo];
     }
-    for(int i = 0; i < 1000; i++)
+    for(int i = 0; i < 100; i++)
     {
         if(!matches.count)
         {
@@ -200,14 +194,7 @@
         [matches removeLastObject];
         [last highlightDOMNode];
     }
-    if(usesTimer)
-    {
-        self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:timerInterval target:self selector:@selector(timeredHighlightOfMatches:) userInfo:matches repeats:NO];
-    }
-    else
-    {
-        [self timeredHighlightOfMatches:matches];
-    }
+    self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:timerInterval target:self selector:@selector(timeredHighlightOfMatches:) userInfo:matches repeats:NO];
 }
 
 - (void)invalidateTimers

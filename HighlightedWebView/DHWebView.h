@@ -3,7 +3,6 @@
 #import "DHSearchQuery.h"
 
 @interface DHWebView : WebView {
-    BOOL usesTimer;
     NSTimer *workerTimer;
     NSTimeInterval timerInterval;
     DHSearchQuery *currentQuery;
@@ -12,7 +11,6 @@
     NSMutableString *entirePageContent;
 }
 
-@property (assign) BOOL usesTimer;
 @property (retain) NSTimer *workerTimer;
 @property (assign) NSTimeInterval timerInterval;
 @property (retain) DHSearchQuery *currentQuery;
@@ -22,8 +20,11 @@
 
 - (void)highlightQuery:(NSString *)aQuery caseSensitive:(BOOL)isCaseSensitive;
 - (void)highlightQuery:(DHSearchQuery *)query;
+- (void)startClearingHighlights;
+- (void)clearHighlights;
 - (void)traverseNodes:(NSMutableArray *)nodes;
 - (void)highlightMatches;
+- (void)timeredHighlightOfMatches:(NSMutableArray *)matches;
 - (void)invalidateTimers;
 - (NSString *)normalizeWhitespaces:(NSString *)aString;
 

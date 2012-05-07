@@ -23,8 +23,8 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    [webView setMainFrameURL:@"file:///Users/bogdan/Library/Application%20Support/Dash/DocSets/Android/Android.docset/Contents/Resources/Documents/docs/reference/android/widget/AbsListView.html"];
-//    [webView setMainFrameURL:@"http://kapeli.com/dash"];
+//    [webView setMainFrameURL:@"file:///Users/bogdan/Library/Application%20Support/Dash/DocSets/Android/Android.docset/Contents/Resources/Documents/docs/reference/android/widget/AbsListView.html"];
+    [webView setMainFrameURL:@"http://kapeli.com/dash"];
 }
 
 @end
