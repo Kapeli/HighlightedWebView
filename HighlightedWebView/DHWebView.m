@@ -63,8 +63,9 @@
             {
                 return;
             }
-            DOMDocument *document = [[self mainFrame] DOMDocument];
-            [self traverseNodes:[NSMutableArray arrayWithObject:[document body]]];
+            DOMDocument *document = [self mainFrameDocument];
+            DOMHTMLElement *body = [document body];
+            [self traverseNodes:[NSMutableArray arrayWithObject:body]];
             return;
         }
         DHMatchedText *match = [highlightedMatches objectAtIndex:0];
@@ -92,31 +93,25 @@
         if(node.nodeType == DOM_TEXT_NODE || node.nodeType == DOM_CDATA_SECTION_NODE)
         {
             DOMText *textNode = (DOMText *)node;
-            NSString *content = [textNode nodeValue];
-            // Normalize the whitespaces so we avoid getting screwed by characters like "thin whitespace" (U+2009).
-            // Yes, I tried using NSWidthInsensitiveSearch, but it only works for comparisons, not searching, hence the name (GG Apple!)
-            NSRange foundRange;
-            NSInteger scanLocation = 0;
-            do 
+  
+            NSString *content = [self normalizeWhitespaces:[textNode nodeValue]];
+            if(content.length)
             {
-                foundRange = [content rangeOfCharacterFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet] options:NSLiteralSearch range:NSMakeRange(scanLocation, content.length-scanLocation)];
-                if(foundRange.location != NSNotFound)
-                {
-                    scanLocation = foundRange.location+foundRange.length;
-                    content = [content stringByReplacingCharactersInRange:foundRange withString:@" "];
-                }
-            } 
-            while (foundRange.location != NSNotFound);
-            DHMatchedText *matchedText = [DHMatchedText matchedTextWithDOMText:textNode andRange:NSMakeRange(entirePageContent.length, content.length)];
-            [entirePageContent appendString:content];
-            [matchedTexts addObject:matchedText];
+                DHMatchedText *matchedText = [DHMatchedText matchedTextWithDOMText:textNode andRange:NSMakeRange(entirePageContent.length, content.length)];
+                [entirePageContent appendString:content];
+                [matchedTexts addObject:matchedText];
+            }
         }
         if(node.nodeType == DOM_ELEMENT_NODE)
         {
-            DOMNodeList *childNodes = [node childNodes];
-            for(int i = 0; i < childNodes.length; i++)
+            NSString *tagName = [(DOMElement*)node tagName];
+            if(![tagName isCaseInsensitiveLike:@"style"] && ![tagName isCaseInsensitiveLike:@"script"])
             {
-                [nodes insertObject:[childNodes item:i] atIndex:i];
+                DOMNodeList *childNodes = [node childNodes];
+                for(int i = 0; i < childNodes.length; i++)
+                {
+                    [nodes insertObject:[childNodes item:i] atIndex:i];
+                }
             }
         }
         [node release];
@@ -182,7 +177,10 @@
             }
         } while (currentMatch);
     }
-    [self timeredHighlightOfMatches:[NSMutableArray arrayWithArray:[foundMatches allObjects]]];
+    if(foundMatches.count)
+    {
+        [self timeredHighlightOfMatches:[NSMutableArray arrayWithArray:[foundMatches allObjects]]];
+    }
 }
 
 - (void)timeredHighlightOfMatches:(NSMutableArray *)matches
@@ -219,6 +217,25 @@
         [workerTimer invalidate];
     }
     self.workerTimer = nil;
+}
+
+- (NSString *)normalizeWhitespaces:(NSString *)aString
+{
+    // Normalize the whitespaces so we can avoid characters like "thin whitespace" (U+2009).
+    // Yes, I tried using NSWidthInsensitiveSearch, but it only works for comparisons, not searching, hence the name (GG Apple!)
+    NSRange foundRange;
+    NSInteger scanLocation = 0;
+    NSMutableString *string = [NSMutableString stringWithString:aString];
+    do
+    {
+        foundRange = [string rangeOfCharacterFromSet:[NSCharacterSet whitespaceCharacterSet] options:NSLiteralSearch range:NSMakeRange(scanLocation, string.length-scanLocation)];
+        if(foundRange.location != NSNotFound)
+        {
+            scanLocation = foundRange.location+foundRange.length;
+            [string replaceCharactersInRange:foundRange withString:@" "];
+        }
+    } while (foundRange.location != NSNotFound);
+    return string;
 }
 
 - (void)dealloc

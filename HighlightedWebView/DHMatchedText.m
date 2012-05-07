@@ -22,7 +22,7 @@
         self.text = aText;
         self.effectiveRange = aRange;
         self.foundRanges = [NSMutableArray array];
-        self.originalText = [NSString stringWithString:[text data]];
+        self.originalText = [NSString stringWithString:[text nodeValue]];
     }
     return self;
 }
@@ -51,7 +51,7 @@
     }
     spanContent = [spanContent stringByEscapingForHTML];
     spanContent = [spanContent stringByReplacingOccurrencesOfString:@"DHSpanPLACEHOLDEREND" withString:@"</span>"];
-    spanContent = [spanContent stringByReplacingOccurrencesOfString:@"DHSpanPLACEHOLDER" withString:@"<span style='color:red'>"];
+    spanContent = [spanContent stringByReplacingOccurrencesOfString:@"DHSpanPLACEHOLDER" withString:DHHighlightSpan];
     DOMNode *parent = [text parentNode];
     if(![parent isKindOfClass:[DOMNode class]])
     {

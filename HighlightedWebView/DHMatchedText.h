@@ -22,3 +22,5 @@
 - (void)clearHighlight;
 
 @end
+
+static NSString *DHHighlightSpan = @"<span style='-webkit-border-radius: 7px; -webkit-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.6); background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(244, 234, 38, 0.7)), to(rgba(237, 206, 0, 0.7)) ); border: 1px solid rgba(244, 234, 38, 0.8);'>";

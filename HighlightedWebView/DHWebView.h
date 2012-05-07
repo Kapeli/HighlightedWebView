@@ -25,5 +25,6 @@
 - (void)traverseNodes:(NSMutableArray *)nodes;
 - (void)highlightMatches;
 - (void)invalidateTimers;
+- (NSString *)normalizeWhitespaces:(NSString *)aString;
 
 @end
