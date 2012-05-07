@@ -1,7 +1,7 @@
 HighlightedWebView
 ==================
 
-Drop-in WebView subclass that adds extra in-page search-related functionality.
+Drop-in WebView subclass that adds Safari-style in-page search-result highlighting.
 
 ![Screenshot](https://github.com/Kapeli/HighlightedWebView/raw/master/Preview.png)
 
