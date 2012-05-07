@@ -1,8 +1,14 @@
 HighlightedWebView
 ==================
 
-WebView subclass that highlights all search results (like Safari), as well as highlight where the search results are in the scrollbar position (like Google Chrome).
+Drop-in WebView subclass that adds extra in-page search-related functionality.
 
-Why use HighlightedWebView over other JavaScript alternatives (e.g. https://github.com/krawaller/prettySearch.js):
-* It's Objective-C.
-* It doesn't block the main thread.
+Features:
+=========
+* Highlight search results (Safari-style).
+* Show position of search results by highlighting the scrollbar (Google Chrome-style).
+
+Project Goals:
+==============
+* Avoid JavaScript.
+* Avoid blocking the main thread as much as possible
