@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		431FBA56155694F70012103F /* NSString+GTM.m in Sources */ = {isa = PBXBuildFile; fileRef = 431FBA55155694F70012103F /* NSString+GTM.m */; };
+		43F1FF7D1558185F0043B796 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43F1FF7C1558185F0043B796 /* WebKit.framework */; };
 		43F7F3821554F75D00879D86 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43F7F3811554F75D00879D86 /* Cocoa.framework */; };
 		43F7F38C1554F75D00879D86 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 43F7F38A1554F75D00879D86 /* InfoPlist.strings */; };
 		43F7F38E1554F75D00879D86 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 43F7F38D1554F75D00879D86 /* main.m */; };
@@ -15,14 +16,26 @@
 		43F7F3951554F75D00879D86 /* DHAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 43F7F3941554F75D00879D86 /* DHAppDelegate.m */; };
 		43F7F3981554F75D00879D86 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43F7F3961554F75D00879D86 /* MainMenu.xib */; };
 		43F7F3A01554F77000879D86 /* DHWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 43F7F39F1554F77000879D86 /* DHWebView.m */; };
-		43F7F3A21554F77E00879D86 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43F7F3A11554F77E00879D86 /* WebKit.framework */; };
 		43F7F3B0155508BB00879D86 /* DHSearchQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 43F7F3AF155508BB00879D86 /* DHSearchQuery.m */; };
 		43F7F3BA155566D700879D86 /* DHMatchedText.m in Sources */ = {isa = PBXBuildFile; fileRef = 43F7F3B9155566D700879D86 /* DHMatchedText.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		43D497F1155730A000F64F00 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		431FBA54155694F70012103F /* NSString+GTM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+GTM.h"; sourceTree = "<group>"; };
 		431FBA55155694F70012103F /* NSString+GTM.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+GTM.m"; sourceTree = "<group>"; };
+		43F1FF7C1558185F0043B796 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		43F7F37D1554F75D00879D86 /* HighlightedWebView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HighlightedWebView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		43F7F3811554F75D00879D86 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		43F7F3841554F75D00879D86 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -38,7 +51,6 @@
 		43F7F3971554F75D00879D86 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		43F7F39E1554F77000879D86 /* DHWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DHWebView.h; sourceTree = "<group>"; };
 		43F7F39F1554F77000879D86 /* DHWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DHWebView.m; sourceTree = "<group>"; };
-		43F7F3A11554F77E00879D86 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		43F7F3AE155508BB00879D86 /* DHSearchQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DHSearchQuery.h; sourceTree = "<group>"; };
 		43F7F3AF155508BB00879D86 /* DHSearchQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DHSearchQuery.m; sourceTree = "<group>"; };
 		43F7F3B8155566D700879D86 /* DHMatchedText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DHMatchedText.h; sourceTree = "<group>"; };
@@ -50,7 +62,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43F7F3A21554F77E00879D86 /* WebKit.framework in Frameworks */,
+				43F1FF7D1558185F0043B796 /* WebKit.framework in Frameworks */,
 				43F7F3821554F75D00879D86 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -78,7 +90,6 @@
 		43F7F3801554F75D00879D86 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				43F7F3A11554F77E00879D86 /* WebKit.framework */,
 				43F7F3811554F75D00879D86 /* Cocoa.framework */,
 				43F7F3831554F75D00879D86 /* Other Frameworks */,
 			);
@@ -88,6 +99,7 @@
 		43F7F3831554F75D00879D86 /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				43F1FF7C1558185F0043B796 /* WebKit.framework */,
 				43F7F3841554F75D00879D86 /* AppKit.framework */,
 				43F7F3851554F75D00879D86 /* CoreData.framework */,
 				43F7F3861554F75D00879D86 /* Foundation.framework */,
@@ -136,6 +148,7 @@
 				43F7F3791554F75D00879D86 /* Sources */,
 				43F7F37A1554F75D00879D86 /* Frameworks */,
 				43F7F37B1554F75D00879D86 /* Resources */,
+				43D497F1155730A000F64F00 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -277,9 +290,17 @@
 		43F7F39C1554F75D00879D86 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HighlightedWebView/HighlightedWebView-Prefix.pch";
 				INFOPLIST_FILE = "HighlightedWebView/HighlightedWebView-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -288,9 +309,17 @@
 		43F7F39D1554F75D00879D86 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HighlightedWebView/HighlightedWebView-Prefix.pch";
 				INFOPLIST_FILE = "HighlightedWebView/HighlightedWebView-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

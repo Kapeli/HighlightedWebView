@@ -64,7 +64,6 @@
                 return;
             }
             DOMDocument *document = [[self mainFrame] DOMDocument];
-            NSLog(@"start");
             [self traverseNodes:[NSMutableArray arrayWithObject:[document body]]];
             return;
         }
@@ -90,15 +89,29 @@
         DOMNode *node = [nodes objectAtIndex:0];
         [node retain];
         [nodes removeObjectAtIndex:0];
-        if(node.nodeType == DOM_TEXT_NODE)
+        if(node.nodeType == DOM_TEXT_NODE || node.nodeType == DOM_CDATA_SECTION_NODE)
         {
             DOMText *textNode = (DOMText *)node;
-            NSString *content = [textNode data];
+            NSString *content = [textNode nodeValue];
+            // Normalize the whitespaces so we avoid getting screwed by characters like "thin whitespace" (U+2009).
+            // Yes, I tried using NSWidthInsensitiveSearch, but it only works for comparisons, not searching, hence the name (GG Apple!)
+            NSRange foundRange;
+            NSInteger scanLocation = 0;
+            do 
+            {
+                foundRange = [content rangeOfCharacterFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet] options:NSLiteralSearch range:NSMakeRange(scanLocation, content.length-scanLocation)];
+                if(foundRange.location != NSNotFound)
+                {
+                    scanLocation = foundRange.location+foundRange.length;
+                    content = [content stringByReplacingCharactersInRange:foundRange withString:@" "];
+                }
+            } 
+            while (foundRange.location != NSNotFound);
             DHMatchedText *matchedText = [DHMatchedText matchedTextWithDOMText:textNode andRange:NSMakeRange(entirePageContent.length, content.length)];
             [entirePageContent appendString:content];
             [matchedTexts addObject:matchedText];
         }
-        if([node isKindOfClass:[DOMElement class]])
+        if(node.nodeType == DOM_ELEMENT_NODE)
         {
             DOMNodeList *childNodes = [node childNodes];
             for(int i = 0; i < childNodes.length; i++)
@@ -157,6 +170,10 @@
                 if(intersectionRange.location+intersectionRange.length >= actualRange.location+actualRange.length)
                 {
                     break;
+                }
+                else
+                {
+                    currentMatch = [matchesEnumerator nextObject];
                 }
             }
             else
