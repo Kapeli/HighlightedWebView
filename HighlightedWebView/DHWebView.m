@@ -18,10 +18,6 @@
         return NO;
     }
     DHSearchQuery *query = [DHSearchQuery searchQueryWithQuery:string caseSensitive:caseFlag];
-//    if(![currentQuery isEqualTo:query])
-//    {
-//        [self startClearingHighlights];
-//    }
     BOOL result = [super searchFor:string direction:forward caseSensitive:caseFlag wrap:wrapFlag];
     if(result)
     {

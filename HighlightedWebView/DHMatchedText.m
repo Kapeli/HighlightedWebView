@@ -1,5 +1,4 @@
 #import "DHMatchedText.h"
-#import "NSString+GTM.h"
 
 @implementation DHMatchedText
 
