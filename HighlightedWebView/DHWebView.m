@@ -17,13 +17,14 @@
         [self startClearingHighlights];
         return NO;
     }
+    DHSearchQuery *query = [DHSearchQuery searchQueryWithQuery:string caseSensitive:caseFlag];
+//    if(![currentQuery isEqualTo:query])
+//    {
+//        [self startClearingHighlights];
+//    }
     BOOL result = [super searchFor:string direction:forward caseSensitive:caseFlag wrap:wrapFlag];
     if(result)
     {
-        DHSearchQuery *query = [DHSearchQuery searchQueryWithQuery:string caseSensitive:caseFlag];
-        [query setWrap:wrapFlag];
-        [query setDirection:forward];
-        [query setDidSearch:YES];
         [self highlightQuery:query];
     }
     else
@@ -58,7 +59,7 @@
 
 - (void)clearHighlights
 {
-    for(int i = 0; i < 1000; i++)
+    for(int i = 0; i < 300; i++)
     {
         if(!highlightedMatches.count)
         {
@@ -75,13 +76,131 @@
             {
                 return;
             }
+            
+            DOMNode *expectedStart = [currentQuery.selectionAfterClear objectForKey:@"expectedStart"];
+            DOMNode *actualStart = [currentQuery.selectionAfterClear objectForKey:@"startContainer"];
+            DOMNode *expectedEnd = [currentQuery.selectionAfterClear objectForKey:@"expectedEnd"];
+            DOMNode *actualEnd = [currentQuery.selectionAfterClear objectForKey:@"endContainer"];
+            @try {
+                if(expectedStart && actualEnd)
+                {
+                    int startOffset = [[currentQuery.selectionAfterClear objectForKey:@"expectedStartOffset"] intValue];
+                    int endOffset = [[currentQuery.selectionAfterClear objectForKey:@"endOffset"] intValue];
+                    DOMRange *range = [document createRange];
+                    [range setStart:expectedStart offset:startOffset];
+                    [range setEnd:actualEnd offset:endOffset];
+                    [self setSelectedDOMRange:range affinity:NSSelectionAffinityUpstream];
+                }
+                else if(expectedEnd && actualStart)
+                {
+                    int endOffset = [[currentQuery.selectionAfterClear objectForKey:@"expectedEndOffset"] intValue];
+                    int startOffset = [[currentQuery.selectionAfterClear objectForKey:@"startOffset"] intValue];
+                    DOMRange *range = [document createRange];
+                    [range setStart:actualStart offset:startOffset];
+                    [range setEnd:expectedEnd offset:endOffset];
+                    [self setSelectedDOMRange:range affinity:NSSelectionAffinityUpstream];
+                }
+            }
+            @catch (NSException *exception) {
+            }
+            
             [self traverseNodes:[NSMutableArray arrayWithObject:body]];
             return;
         }
         DHMatchedText *match = [highlightedMatches objectAtIndex:0];
         [match retain];
         [highlightedMatches removeObjectAtIndex:0];
-        [match clearHighlight];
+        if(![currentQuery.selectionAfterClear objectForKey:@"startContainer"] || ![currentQuery.selectionAfterClear objectForKey:@"endContainer"])
+        { 
+            DOMRange *range = [self selectedDOMRange];
+            DOMNode *expectedStart = [currentQuery.selectionAfterClear objectForKey:@"expectedStart"];
+            DOMNode *expectedEnd = [currentQuery.selectionAfterClear objectForKey:@"expectedEnd"];
+            if(range || expectedStart || expectedEnd)
+            {
+                if(range)
+                {
+                    [currentQuery.selectionAfterClear setObject:[range startContainer] forKey:@"expectedStart"];
+                    [currentQuery.selectionAfterClear setObject:[NSNumber numberWithInt:[range startOffset]] forKey:@"expectedStartOffset"];
+                    [currentQuery.selectionAfterClear setObject:[range endContainer] forKey:@"expectedEnd"];
+                    [currentQuery.selectionAfterClear setObject:[NSNumber numberWithInt:[range endOffset]] forKey:@"expectedEndOffset"];
+                }
+                int rangeStartOffset = (!range) ? [[currentQuery.selectionAfterClear objectForKey:@"expectedStartOffset"] intValue] : [range startOffset];
+                int rangeEndOffset = (!range) ? [[currentQuery.selectionAfterClear objectForKey:@"expectedEndOffset"] intValue] : [range endOffset];
+                DOMNode *startContainer = (range) ? [range startContainer] : expectedStart;
+                DOMNode *endContainer = (range) ? [range endContainer] : expectedEnd;
+                int startOffset = -1;
+                int endOffset = -1;
+                int offset = 0;
+                for(int i = 0; i < match.highlightedSpan.childNodes.length; i++)
+                {
+                    DOMNode *child = [match.highlightedSpan.childNodes item:i];
+                    if(child.nodeType == DOM_ELEMENT_NODE)
+                    {
+                        for(int j = 0; j < child.childNodes.length; j++)
+                        {
+                            DOMNode *anotherChild = [child.childNodes item:j];
+                            if(anotherChild == startContainer)
+                            {
+                                [currentQuery.selectionAfterClear removeObjectForKey:@"expectedStart"];
+                                startOffset = offset + rangeStartOffset;
+                            }
+                            if(anotherChild == endContainer)
+                            {
+                                [currentQuery.selectionAfterClear removeObjectForKey:@"expectedEnd"];
+                                endOffset = offset + rangeEndOffset;
+                            }
+                            offset += anotherChild.nodeValue.length;
+                        }
+                    }
+                    else
+                    {
+                        if(child == startContainer)
+                        {
+                            [currentQuery.selectionAfterClear removeObjectForKey:@"expectedStart"];
+                            startOffset = offset + rangeStartOffset;
+                        }
+                        if(child == endContainer)
+                        {
+                            [currentQuery.selectionAfterClear removeObjectForKey:@"expectedEnd"];
+                            endOffset = offset + rangeEndOffset;
+                        }
+                        offset += child.nodeValue.length;
+                    }
+                }
+                [match clearHighlight];
+                if(startOffset != -1)
+                {
+                    [currentQuery.selectionAfterClear setObject:match.text forKey:@"startContainer"];
+                    [currentQuery.selectionAfterClear setObject:[NSNumber numberWithInt:startOffset] forKey:@"startOffset"];
+                }
+                if(endOffset != -1)
+                {
+                    [currentQuery.selectionAfterClear setObject:match.text forKey:@"endContainer"];
+                    [currentQuery.selectionAfterClear setObject:[NSNumber numberWithInt:endOffset] forKey:@"endOffset"];
+                }
+                if([currentQuery.selectionAfterClear objectForKey:@"startContainer"] && [currentQuery.selectionAfterClear objectForKey:@"endContainer"])
+                {
+                    @try {
+                        DOMRange *range = [[self mainFrameDocument] createRange];
+                        [range setStart:[currentQuery.selectionAfterClear objectForKey:@"startContainer"] offset:[[currentQuery.selectionAfterClear objectForKey:@"startOffset"] intValue]];
+                        [range setEnd:[currentQuery.selectionAfterClear objectForKey:@"endContainer"] offset:[[currentQuery.selectionAfterClear objectForKey:@"endOffset"] intValue]];
+                        [self setSelectedDOMRange:range affinity:NSSelectionAffinityUpstream];
+                    }
+                    @catch (NSException *exception) {
+                    }
+                    @finally {
+                    }
+                }
+            }
+            else
+            {
+                [match clearHighlight];
+            }
+        }
+        else
+        {
+            [match clearHighlight];
+        }
         [match release];
     }
     self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f target:self selector:@selector(clearHighlights) userInfo:nil repeats:NO];
@@ -195,16 +314,58 @@
     {
         if(!matches.count)
         {
-            if(![self selectedDOMRange] && currentQuery.didSearch)
-            {
-                [self searchFor:currentQuery.query direction:currentQuery.direction caseSensitive:currentQuery.isCaseSensitive wrap:currentQuery.wrap];
-            }
             return;
         }
         DHMatchedText *last = [matches lastObject];
         [highlightedMatches addObject:last];
         [matches removeLastObject];
-        [last highlightDOMNode];
+        
+        if(![currentQuery.selectionAfterHighlight objectForKey:@"startContainer"] || ![currentQuery.selectionAfterHighlight objectForKey:@"endContainer"])
+        {
+            DOMRange *range = [self selectedDOMRange];
+            DOMNode *expectedStart = [currentQuery.selectionAfterHighlight objectForKey:@"expectedStart"];
+            DOMNode *expectedEnd = [currentQuery.selectionAfterHighlight objectForKey:@"expectedEnd"];
+            if(range || expectedStart || expectedEnd)
+            {
+                if(range)
+                {
+                    [currentQuery.selectionAfterHighlight setObject:[range startContainer] forKey:@"expectedStart"];
+                    [currentQuery.selectionAfterHighlight setObject:[NSNumber numberWithInt:[range startOffset]] forKey:@"expectedStartOffset"];
+                    [currentQuery.selectionAfterHighlight setObject:[range endContainer] forKey:@"expectedEnd"];
+                    [currentQuery.selectionAfterHighlight setObject:[NSNumber numberWithInt:[range endOffset]] forKey:@"expectedEndOffset"];
+                }
+                int startOffset = (!range) ? [[currentQuery.selectionAfterHighlight objectForKey:@"expectedStartOffset"] intValue] : [range startOffset];
+                int endOffset = (!range) ? [[currentQuery.selectionAfterHighlight objectForKey:@"expectedEndOffset"] intValue] : [range endOffset];
+                BOOL isStart = (range) ? [range startContainer] == last.text : expectedStart == last.text;
+                BOOL isEnd = (range) ? [range endContainer] == last.text : expectedEnd == last.text;
+                
+                [last highlightDOMNode];
+                if(isStart)
+                {
+                    [currentQuery.selectionAfterHighlight removeObjectForKey:@"expectedStart"];
+                    [currentQuery.selectionAfterHighlight setObject:last.highlightedSpan forKey:@"startContainer"];
+                    [currentQuery.selectionAfterHighlight setObject:[NSNumber numberWithInt:startOffset] forKey:@"startOffset"];
+                }
+                if(isEnd)
+                {
+                    [currentQuery.selectionAfterHighlight removeObjectForKey:@"expectedEnd"];
+                    [currentQuery.selectionAfterHighlight setObject:last.highlightedSpan forKey:@"endContainer"];
+                    [currentQuery.selectionAfterHighlight setObject:[NSNumber numberWithInt:endOffset] forKey:@"endOffset"];
+                }
+                if([currentQuery.selectionAfterHighlight objectForKey:@"startContainer"] && [currentQuery.selectionAfterHighlight objectForKey:@"endContainer"])
+                {
+                    [self selectRangeUsingEncodedDictionary:currentQuery.selectionAfterHighlight];
+                }
+            }
+            else
+            {
+                [last highlightDOMNode];
+            }
+        }
+        else
+        {
+            [last highlightDOMNode];
+        }
     }
     self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f target:self selector:@selector(timeredHighlightOfMatches:) userInfo:matches repeats:NO];
 }
@@ -235,6 +396,61 @@
         }
     } while (foundRange.location != NSNotFound);
     return string;
+}
+
+- (void)selectRangeUsingEncodedDictionary:(NSMutableDictionary *)dictionary
+{
+    DOMNode *start = [dictionary objectForKey:@"startContainer"];
+    DOMNode *end = [dictionary objectForKey:@"endContainer"];
+    int startOffset = [[dictionary objectForKey:@"startOffset"] intValue];
+    int endOffset = [[dictionary objectForKey:@"endOffset"] intValue];
+    DOMRange *newRange = [[self mainFrameDocument] createRange];
+    
+    int offset = 0;
+    for(int i = 0; i < [start childNodes].length; i++)
+    {
+        DOMNode *child = [[start childNodes] item:i];
+        offset += (child.nodeType == DOM_ELEMENT_NODE) ? [(DOMHTMLElement*)child innerText].length : child.nodeValue.length;
+        if(startOffset < offset)
+        {
+            @try {
+                [newRange setStartBefore:child];
+            }
+            @catch (NSException *exception) {
+            }
+            break;
+        }
+    }
+    offset = 0;
+    for(int i = 0; i < [end childNodes].length; i++)
+    {
+        DOMNode *child = [[end childNodes] item:i];
+        offset += (child.nodeType == DOM_ELEMENT_NODE) ? [(DOMHTMLElement*)child innerText].length : child.nodeValue.length;
+        if(endOffset <= offset)
+        {
+            @try {
+                [newRange setEndAfter:child];
+            }
+            @catch (NSException *exception) {
+            }
+            break;
+        }
+    }
+    @try {
+        [self setSelectedDOMRange:newRange affinity:NSSelectionAffinityUpstream];
+    }
+    @catch (NSException *exception) {
+    }
+}
+
+- (void)clearSelection
+{
+    DOMRange *range = [self selectedDOMRange];
+    if(range)
+    {
+        [range setEnd:[range startContainer] offset:[range startOffset]];
+        [self setSelectedDOMRange:range affinity:NSSelectionAffinityUpstream];
+    }
 }
 
 - (void)dealloc

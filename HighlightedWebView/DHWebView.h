@@ -25,5 +25,7 @@
 - (void)timeredHighlightOfMatches:(NSMutableArray *)matches;
 - (void)invalidateTimers;
 - (NSString *)normalizeWhitespaces:(NSString *)aString;
+- (void)selectRangeUsingEncodedDictionary:(NSMutableDictionary *)dictionary;
+- (void)clearSelection;
 
 @end

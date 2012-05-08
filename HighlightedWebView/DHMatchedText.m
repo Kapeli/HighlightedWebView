@@ -8,6 +8,7 @@
 @synthesize effectiveRange;
 @synthesize highlightedSpan;
 @synthesize foundRanges;
+@synthesize firstMatch;
 
 + (DHMatchedText *)matchedTextWithDOMText:(DOMText *)aText andRange:(NSRange)aRange
 {
@@ -29,6 +30,7 @@
 
 - (void)highlightDOMNode
 {
+    self.firstMatch = nil;
     if(!foundRanges.count)
     {
         return;
@@ -46,8 +48,7 @@
     DOMDocument *document = [text ownerDocument];
     DOMHTMLElement *spanWrap = (DOMHTMLElement*)[document createElement:@"span"];
     [spanWrap setAttribute:@"style" value:DHSpanWrap];
-    [parent insertBefore:spanWrap refChild:text];
-    [parent removeChild:text];
+    [parent replaceChild:spanWrap oldChild:text];
     
     NSRange previousRange = NSMakeRange(0, 0);
     for(NSValue *foundRange in foundRanges)
@@ -65,6 +66,7 @@
         {
             [text setNodeValue:[originalText substringWithRange:range]];
             [aSpan appendChild:text];
+            self.firstMatch = text;
             self.text = nil;
         }
         else 
@@ -93,13 +95,13 @@
     DOMDocument *document = [highlightedSpan ownerDocument];
     DOMText *original = [document createTextNode:originalText];
     self.text = original;
-    [parent insertBefore:text refChild:highlightedSpan];
-    [parent removeChild:highlightedSpan];
+    [parent replaceChild:text oldChild:highlightedSpan];
     self.highlightedSpan = nil;
 }
 
 - (void)dealloc
 {
+    [firstMatch release];
     [highlightedSpan release];
     [originalText release];
     [foundRanges release];

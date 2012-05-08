@@ -4,9 +4,8 @@
 
 @synthesize query;
 @synthesize isCaseSensitive;
-@synthesize wrap;
-@synthesize direction;
-@synthesize didSearch;
+@synthesize selectionAfterHighlight;
+@synthesize selectionAfterClear;
 
 + (DHSearchQuery *)searchQueryWithQuery:(NSString *)aQuery caseSensitive:(BOOL)caseSensitive
 {
@@ -20,6 +19,8 @@
     {
         self.query = [NSString stringWithString:aQuery];
         self.isCaseSensitive = caseSensitive;
+        self.selectionAfterClear = [NSMutableDictionary dictionary];
+        self.selectionAfterHighlight = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -43,6 +44,8 @@
 
 - (void)dealloc
 {
+    [selectionAfterClear release];
+    [selectionAfterHighlight release];
     [query release];
     [super dealloc];
 }
