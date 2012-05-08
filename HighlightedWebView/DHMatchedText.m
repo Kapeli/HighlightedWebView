@@ -38,32 +38,49 @@
         NSRange range2 = [obj2 rangeValue];
         if(range1.location < range2.location)
         {
-            return NSOrderedDescending;
+            return NSOrderedAscending;
         }
-        return NSOrderedAscending;
+        return NSOrderedDescending;
     }];
-    NSString *spanContent = [NSString stringWithString:originalText];
+    DOMNode *parent = [text parentNode];
+    DOMDocument *document = [text ownerDocument];
+    DOMHTMLElement *spanWrap = (DOMHTMLElement*)[document createElement:@"span"];
+    [spanWrap setAttribute:@"style" value:DHSpanWrap];
+    [parent insertBefore:spanWrap refChild:text];
+    [parent removeChild:text];
+    
+    NSRange previousRange = NSMakeRange(0, 0);
     for(NSValue *foundRange in foundRanges)
     {
         NSRange range = [foundRange rangeValue];
         range = NSMakeRange(range.location - effectiveRange.location, range.length);
-        spanContent = [spanContent stringByReplacingCharactersInRange:range withString:[NSString stringWithFormat:@"DHSpanPLACEHOLDER%@DHSpanPLACEHOLDEREND", [spanContent substringWithRange:range]]];
+        if(previousRange.location + previousRange.length < range.location)
+        {
+            DOMText *aText = [document createTextNode:[originalText substringWithRange:NSMakeRange(previousRange.location+previousRange.length, range.location-previousRange.location-previousRange.length)]];
+            [spanWrap appendChild:aText];
+        }
+        DOMElement *aSpan = [document createElement:@"span"];
+        [aSpan setAttribute:@"style" value:DHHighlightSpan];
+        if(text)
+        {
+            [text setNodeValue:[originalText substringWithRange:range]];
+            [aSpan appendChild:text];
+            self.text = nil;
+        }
+        else 
+        {
+            DOMText *aText = [document createTextNode:[originalText substringWithRange:range]];
+            [aSpan appendChild:aText];
+        }
+        [spanWrap appendChild:aSpan];
+        previousRange = range;
     }
-    spanContent = [spanContent stringByEscapingForHTML];
-    spanContent = [spanContent stringByReplacingOccurrencesOfString:@"DHSpanPLACEHOLDEREND" withString:@"</span>"];
-    spanContent = [spanContent stringByReplacingOccurrencesOfString:@"DHSpanPLACEHOLDER" withString:DHHighlightSpan];
-    DOMNode *parent = [text parentNode];
-    if(![parent isKindOfClass:[DOMNode class]])
+    if(previousRange.location + previousRange.length < originalText.length)
     {
-        return;
+        DOMText *aText = [document createTextNode:[originalText substringWithRange:NSMakeRange(previousRange.location+previousRange.length, originalText.length-previousRange.location-previousRange.length)]];
+        [spanWrap appendChild:aText];
     }
-    DOMDocument *document = [text ownerDocument];
-    DOMHTMLElement *span = (DOMHTMLElement*)[document createElement:@"span"];
-    self.highlightedSpan = span;
-    [span setInnerHTML:spanContent];
-    [parent insertBefore:span refChild:text];
-    [parent removeChild:text];
-    self.text = nil;
+    self.highlightedSpan = spanWrap;
 }
 
 - (void)clearHighlight

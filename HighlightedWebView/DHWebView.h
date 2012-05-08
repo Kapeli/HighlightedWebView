@@ -4,7 +4,6 @@
 
 @interface DHWebView : WebView {
     NSTimer *workerTimer;
-    NSTimeInterval timerInterval;
     DHSearchQuery *currentQuery;
     NSMutableArray *highlightedMatches;
     NSMutableArray *matchedTexts;
@@ -12,7 +11,6 @@
 }
 
 @property (retain) NSTimer *workerTimer;
-@property (assign) NSTimeInterval timerInterval;
 @property (retain) DHSearchQuery *currentQuery;
 @property (retain) NSMutableArray *highlightedMatches;
 @property (retain) NSMutableArray *matchedTexts;

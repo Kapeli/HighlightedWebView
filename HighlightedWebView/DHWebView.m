@@ -3,25 +3,33 @@
 
 @implementation DHWebView
 
-@synthesize timerInterval;
 @synthesize currentQuery;
 @synthesize workerTimer;
 @synthesize highlightedMatches;
 @synthesize matchedTexts;
 @synthesize entirePageContent;
 
-- (void)awakeFromNib
-{
-    timerInterval = 0.01f;
-}
-
 - (BOOL)searchFor:(NSString *)string direction:(BOOL)forward caseSensitive:(BOOL)caseFlag wrap:(BOOL)wrapFlag
 {
+    if(!string.length)
+    {
+        self.currentQuery = nil;
+        [self startClearingHighlights];
+        return NO;
+    }
     BOOL result = [super searchFor:string direction:forward caseSensitive:caseFlag wrap:wrapFlag];
     if(result)
     {
         DHSearchQuery *query = [DHSearchQuery searchQueryWithQuery:string caseSensitive:caseFlag];
+        [query setWrap:wrapFlag];
+        [query setDirection:forward];
+        [query setDidSearch:YES];
         [self highlightQuery:query];
+    }
+    else
+    {
+        self.currentQuery = nil;
+        [self startClearingHighlights];
     }
     return result;
 }
@@ -76,7 +84,7 @@
         [match clearHighlight];
         [match release];
     }
-    self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:timerInterval target:self selector:@selector(clearHighlights) userInfo:nil repeats:NO];
+    self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f target:self selector:@selector(clearHighlights) userInfo:nil repeats:NO];
 }
 
 - (void)traverseNodes:(NSMutableArray *)nodes
@@ -117,7 +125,7 @@
         }
         [node release];
     }
-    self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:timerInterval target:self selector:@selector(traverseWithTimer:) userInfo:nodes repeats:NO];
+    self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f target:self selector:@selector(traverseWithTimer:) userInfo:nodes repeats:NO];
 }
 
 - (void)traverseWithTimer:(NSTimer *)timer
@@ -187,6 +195,10 @@
     {
         if(!matches.count)
         {
+            if(![self selectedDOMRange] && currentQuery.didSearch)
+            {
+                [self searchFor:currentQuery.query direction:currentQuery.direction caseSensitive:currentQuery.isCaseSensitive wrap:currentQuery.wrap];
+            }
             return;
         }
         DHMatchedText *last = [matches lastObject];
@@ -194,7 +206,7 @@
         [matches removeLastObject];
         [last highlightDOMNode];
     }
-    self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:timerInterval target:self selector:@selector(timeredHighlightOfMatches:) userInfo:matches repeats:NO];
+    self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f target:self selector:@selector(timeredHighlightOfMatches:) userInfo:matches repeats:NO];
 }
 
 - (void)invalidateTimers

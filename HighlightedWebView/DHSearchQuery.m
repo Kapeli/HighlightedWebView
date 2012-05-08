@@ -4,6 +4,9 @@
 
 @synthesize query;
 @synthesize isCaseSensitive;
+@synthesize wrap;
+@synthesize direction;
+@synthesize didSearch;
 
 + (DHSearchQuery *)searchQueryWithQuery:(NSString *)aQuery caseSensitive:(BOOL)caseSensitive
 {
