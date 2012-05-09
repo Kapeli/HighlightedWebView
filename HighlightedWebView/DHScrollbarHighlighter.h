@@ -14,5 +14,6 @@
 + (DHScrollbarHighlighter *)highlighterWithWebView:(WebView *)aWebView andMatches:(NSArray *)matches;
 - (id)initWithWebView:(WebView *)aWebView andMatches:(NSArray *)matches;
 - (void)calculatePositions;
+- (int)topPositionForElement:(DOMHTMLElement *)element;
 
 @end

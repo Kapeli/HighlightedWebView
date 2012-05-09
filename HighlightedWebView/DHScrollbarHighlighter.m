@@ -27,6 +27,7 @@
             self.highlightRects = [NSMutableArray array];
             [self setAutoresizingMask:NSViewMinXMargin | NSViewHeightSizable];
             [self calculatePositions];
+            [self setWantsLayer:YES];
             [parentView addSubview:self];
         }
     }
@@ -35,24 +36,18 @@
 
 - (void)calculatePositions
 {
-    NSInteger scrollHeight = [[[parentView mainFrameDocument] body] scrollHeight];
+    float documentHeight = [[[[parentView mainFrame] frameView] documentView] bounds].size.height;
     float ownHeight = self.frame.size.height;
     float ownWidth = self.frame.size.width;
     NSMutableArray *rects = [NSMutableArray array];
     for(DHMatchedText *matchedText in matches)
     {
         DOMHTMLElement *wrapperSpan = (DOMHTMLElement*)[matchedText highlightedSpan];
-        for(int i = 0; i < wrapperSpan.children.length; i++)
-        {
-            DOMHTMLElement *highlightedSpan = (DOMHTMLElement*)[[wrapperSpan children] item:i];
-            if(highlightedSpan.nodeType == DOM_ELEMENT_NODE)
-            {
-                float flippedY = [highlightedSpan offsetTop] / (float)scrollHeight * ownHeight;
-                float actualY = ownHeight-flippedY;
-                int roundY = (int)actualY;
-                [rects addObject:[NSValue valueWithRect:NSMakeRect(0, roundY, ownWidth, 3)]];
-            }
-        }
+        int top = [self topPositionForElement:wrapperSpan];
+        float flippedY = top / documentHeight * ownHeight;
+        float actualY = ownHeight-flippedY;
+        actualY = (actualY <= 3) ? 3 : (actualY > ownHeight - 4) ? ownHeight-4 : actualY;
+        [rects addObject:[NSValue valueWithRect:NSMakeRect(0, actualY-1.5, ownWidth, 3)]];
     }
     for(NSValue *rectValue in rects)
     {
@@ -76,8 +71,8 @@
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-    NSColor *inner = [NSColor colorWithCalibratedRed:0.984f green:0.956f blue:0.788f alpha:1.0f];
-    NSColor *outer = [NSColor colorWithCalibratedRed:0.941f green:0.8f blue:0.203f alpha:1.0f];
+    NSColor *inner = [NSColor colorWithCalibratedRed:0.984f green:0.956f blue:0.788f alpha:0.5f];
+    NSColor *outer = [NSColor colorWithCalibratedRed:0.941f green:0.8f blue:0.203f alpha:0.8f];
     for(NSValue *highlightRect in highlightRects)
     {
         NSRect rect = [highlightRect rectValue];
@@ -86,6 +81,47 @@
         [outer set];
         [NSBezierPath strokeRect:rect];
     }
+}
+
+- (int)topPositionForElement:(DOMHTMLElement *)element
+{
+    int top = 0;
+    DOMHTMLElement *o = element;
+    DOMElement *offsetParent = o.offsetParent;
+    DOMElement *el = o;
+    while(el.parentNode)
+    {
+        el = (DOMElement*)el.parentNode;
+        if([el respondsToSelector:@selector(offsetParent)] && el.offsetParent)
+        {
+            top -= el.scrollTop;
+        }
+        if(el == offsetParent)
+        {
+            top += o.offsetTop;
+            if(el.clientTop && ![el.nodeName isCaseInsensitiveLike:@"TABLE"])
+            {
+                top += el.clientTop;
+            }
+            o = (DOMHTMLElement*)el;
+            if([o respondsToSelector:@selector(offsetParent)])
+            {
+                if(!o.offsetParent)
+                {
+                    if(o.offsetTop)
+                    {
+                        top += o.offsetTop;
+                    }
+                }
+                offsetParent = o.offsetParent;
+            }
+            else
+            {
+                offsetParent = nil;
+            }
+        }
+    }
+    return top;
 }
 
 - (void)dealloc
