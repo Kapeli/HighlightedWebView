@@ -27,5 +27,6 @@
 - (NSString *)normalizeWhitespaces:(NSString *)aString;
 - (void)selectRangeUsingEncodedDictionary:(NSMutableDictionary *)dictionary;
 - (void)clearSelection;
+- (void)tryToGuessSelection:(NSDictionary *)fromDict;
 
 @end

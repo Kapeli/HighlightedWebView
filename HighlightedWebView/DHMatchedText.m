@@ -100,6 +100,7 @@
 
 - (void)dealloc
 {
+    [text release];
     [firstMatch release];
     [highlightedSpan release];
     [originalText release];

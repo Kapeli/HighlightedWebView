@@ -72,34 +72,7 @@
             {
                 return;
             }
-            
-            DOMNode *expectedStart = [currentQuery.selectionAfterClear objectForKey:@"expectedStart"];
-            DOMNode *actualStart = [currentQuery.selectionAfterClear objectForKey:@"startContainer"];
-            DOMNode *expectedEnd = [currentQuery.selectionAfterClear objectForKey:@"expectedEnd"];
-            DOMNode *actualEnd = [currentQuery.selectionAfterClear objectForKey:@"endContainer"];
-            @try {
-                if(expectedStart && actualEnd)
-                {
-                    int startOffset = [[currentQuery.selectionAfterClear objectForKey:@"expectedStartOffset"] intValue];
-                    int endOffset = [[currentQuery.selectionAfterClear objectForKey:@"endOffset"] intValue];
-                    DOMRange *range = [document createRange];
-                    [range setStart:expectedStart offset:startOffset];
-                    [range setEnd:actualEnd offset:endOffset];
-                    [self setSelectedDOMRange:range affinity:NSSelectionAffinityUpstream];
-                }
-                else if(expectedEnd && actualStart)
-                {
-                    int endOffset = [[currentQuery.selectionAfterClear objectForKey:@"expectedEndOffset"] intValue];
-                    int startOffset = [[currentQuery.selectionAfterClear objectForKey:@"startOffset"] intValue];
-                    DOMRange *range = [document createRange];
-                    [range setStart:actualStart offset:startOffset];
-                    [range setEnd:expectedEnd offset:endOffset];
-                    [self setSelectedDOMRange:range affinity:NSSelectionAffinityUpstream];
-                }
-            }
-            @catch (NSException *exception) {
-            }
-            
+            [self tryToGuessSelection:currentQuery.selectionAfterClear];
             [self traverseNodes:[NSMutableArray arrayWithObject:body]];
             return;
         }
@@ -310,6 +283,7 @@
     {
         if(!matches.count)
         {
+            [self tryToGuessSelection:currentQuery.selectionAfterHighlight];
             return;
         }
         DHMatchedText *last = [matches lastObject];
@@ -446,6 +420,48 @@
     {
         [range setEnd:[range startContainer] offset:[range startOffset]];
         [self setSelectedDOMRange:range affinity:NSSelectionAffinityUpstream];
+    }
+}
+
+- (void)tryToGuessSelection:(NSDictionary *)fromDict
+{
+    if([self selectedDOMRange])
+    {
+        return;
+    }
+    @try {
+        DOMNode *expectedStart = [fromDict objectForKey:@"expectedStart"];
+        DOMNode *expectedEnd = [fromDict objectForKey:@"expectedEnd"];
+        int expectedStartOffset = [[fromDict objectForKey:@"expectedStartOffset"] intValue];
+        int expectedEndOffset = [[fromDict objectForKey:@"expectedEndOffset"] intValue];
+        DOMNode *start = [fromDict objectForKey:@"startContainer"];
+        DOMNode *end = [fromDict objectForKey:@"endContainer"];
+        int startOffset = (fromDict == currentQuery.selectionAfterHighlight) ? 0 : [[fromDict objectForKey:@"startOffset"] intValue];
+        int endOffset = (fromDict == currentQuery.selectionAfterHighlight) ? 0 : [[fromDict objectForKey:@"endOffset"] intValue];
+        DOMDocument *document = [self mainFrameDocument];
+        if(expectedStart && end)
+        {
+            DOMRange *range = [document createRange];
+            [range setStart:expectedStart offset:expectedStartOffset];
+            [range setEnd:end offset:endOffset];
+            [self setSelectedDOMRange:range affinity:NSSelectionAffinityUpstream];
+        }
+        else if(expectedEnd && start)
+        {
+            DOMRange *range = [document createRange];
+            [range setStart:start offset:startOffset];
+            [range setEnd:expectedEnd offset:expectedEndOffset];
+            [self setSelectedDOMRange:range affinity:NSSelectionAffinityUpstream];
+        }
+        else if(expectedStart && expectedEnd)
+        {
+            DOMRange *range = [[self mainFrameDocument] createRange];
+            [range setStart:expectedStart offset:expectedStartOffset];
+            [range setEnd:expectedEnd offset:expectedEndOffset];
+            [self setSelectedDOMRange:range affinity:NSSelectionAffinityUpstream];
+        }
+    }
+    @catch (NSException *exception) {
     }
 }
 
