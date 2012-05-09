@@ -1,6 +1,7 @@
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
 #import "DHSearchQuery.h"
+#import "DHScrollbarHighlighter.h"
 
 @interface DHWebView : WebView {
     NSTimer *workerTimer;
@@ -8,6 +9,7 @@
     NSMutableArray *highlightedMatches;
     NSMutableArray *matchedTexts;
     NSMutableString *entirePageContent;
+    DHScrollbarHighlighter *scrollHighlighter;
 }
 
 @property (retain) NSTimer *workerTimer;
@@ -15,6 +17,7 @@
 @property (retain) NSMutableArray *highlightedMatches;
 @property (retain) NSMutableArray *matchedTexts;
 @property (retain) NSMutableString *entirePageContent;
+@property (retain) DHScrollbarHighlighter *scrollHighlighter;
 
 - (void)highlightQuery:(NSString *)aQuery caseSensitive:(BOOL)isCaseSensitive;
 - (void)highlightQuery:(DHSearchQuery *)query;

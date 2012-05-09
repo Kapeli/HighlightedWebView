@@ -8,7 +8,7 @@ Drop-in WebView subclass that adds Safari-style in-page search-result highlighti
 Features:
 =========
 * Highlight search results (Safari-style).
-* NOT YET: Show position of search results by highlighting the scrollbar (Google Chrome-style).
+* Show position of search results by highlighting the scrollbar (Google Chrome-style).
 
 Project Goals:
 ==============

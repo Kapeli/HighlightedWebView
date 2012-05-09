@@ -4,6 +4,10 @@
 <dict>
 	<key>HasAskedToTakeAutomaticSnapshotBeforeSignificantChanges</key>
 	<true/>
+	<key>IDEWorkspaceUserSettings_HasAskedToTakeAutomaticSnapshotBeforeSignificantChanges</key>
+	<true/>
+	<key>IDEWorkspaceUserSettings_SnapshotAutomaticallyBeforeSignificantChanges</key>
+	<false/>
 	<key>SnapshotAutomaticallyBeforeSignificantChanges</key>
 	<false/>
 </dict>

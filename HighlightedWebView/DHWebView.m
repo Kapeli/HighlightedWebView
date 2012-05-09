@@ -8,6 +8,7 @@
 @synthesize highlightedMatches;
 @synthesize matchedTexts;
 @synthesize entirePageContent;
+@synthesize scrollHighlighter;
 
 - (BOOL)searchFor:(NSString *)string direction:(BOOL)forward caseSensitive:(BOOL)caseFlag wrap:(BOOL)wrapFlag
 {
@@ -62,6 +63,8 @@
             self.highlightedMatches = [NSMutableArray array];
             self.matchedTexts = [NSMutableArray array];
             self.entirePageContent = [NSMutableString string];
+            [self.scrollHighlighter removeFromSuperview];
+            self.scrollHighlighter = nil;
             if(!currentQuery.query.length)
             {
                 return;
@@ -284,6 +287,7 @@
         if(!matches.count)
         {
             [self tryToGuessSelection:currentQuery.selectionAfterHighlight];
+            self.scrollHighlighter = [DHScrollbarHighlighter highlighterWithWebView:self andMatches:highlightedMatches];
             return;
         }
         DHMatchedText *last = [matches lastObject];
@@ -472,6 +476,7 @@
     [highlightedMatches release];
     [matchedTexts release];
     [entirePageContent release];
+    [scrollHighlighter release];
     [super dealloc];
 }
 
