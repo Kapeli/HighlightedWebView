@@ -15,7 +15,7 @@
 - (id)initWithWebView:(WebView *)aWebView andMatches:(NSArray *)someMatches
 {
     NSScrollView *scrollView = [[[[aWebView mainFrame] frameView] documentView] enclosingScrollView];
-    if(scrollView && scrollView.verticalScroller && !NSEqualRects(scrollView.verticalScroller.frame, NSZeroRect))
+    if(scrollView && scrollView.verticalScroller && scrollView.verticalScroller.frame.origin.x > 0)
     {
         NSRect scrollerFrame = [scrollView verticalScroller].frame;
         NSRect knobRect = [[scrollView verticalScroller] rectForPart:NSScrollerKnob];
@@ -30,8 +30,9 @@
             [self setWantsLayer:YES];
             [parentView addSubview:self];
         }
+        return self;
     }
-    return self;
+    return nil;
 }
 
 - (void)calculatePositions

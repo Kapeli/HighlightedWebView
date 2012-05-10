@@ -31,5 +31,6 @@
 - (void)selectRangeUsingEncodedDictionary:(NSMutableDictionary *)dictionary;
 - (void)clearSelection;
 - (void)tryToGuessSelection:(NSDictionary *)fromDict;
+- (void)didStartProvisionalLoad;
 
 @end

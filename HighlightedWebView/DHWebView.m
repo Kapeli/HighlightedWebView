@@ -50,12 +50,15 @@
 
 - (void)startClearingHighlights
 {
+    [self.scrollHighlighter removeFromSuperview];
+    self.scrollHighlighter = nil;
     [self invalidateTimers];
     [self clearHighlights];
 }
 
 - (void)clearHighlights
 {
+    DOMRange *range = [self selectedDOMRange];
     for(int i = 0; i < 100; i++)
     {
         if(!highlightedMatches.count)
@@ -63,8 +66,6 @@
             self.highlightedMatches = [NSMutableArray array];
             self.matchedTexts = [NSMutableArray array];
             self.entirePageContent = [NSMutableString string];
-            [self.scrollHighlighter removeFromSuperview];
-            self.scrollHighlighter = nil;
             if(!currentQuery.query.length)
             {
                 return;
@@ -84,7 +85,6 @@
         [highlightedMatches removeObjectAtIndex:0];
         if(![currentQuery.selectionAfterClear objectForKey:@"startContainer"] || ![currentQuery.selectionAfterClear objectForKey:@"endContainer"])
         { 
-            DOMRange *range = [self selectedDOMRange];
             DOMNode *expectedStart = [currentQuery.selectionAfterClear objectForKey:@"expectedStart"];
             DOMNode *expectedEnd = [currentQuery.selectionAfterClear objectForKey:@"expectedEnd"];
             if(range || expectedStart || expectedEnd)
@@ -180,7 +180,7 @@
 
 - (void)traverseNodes:(NSMutableArray *)nodes
 {
-    for(int i = 0; i < 1000; i++)
+    for(int i = 0; i < 500; i++)
     {
         if(!nodes.count)
         {
@@ -278,6 +278,7 @@
 
 - (void)timeredHighlightOfMatches:(NSMutableArray *)matches
 {
+    DOMRange *range = [self selectedDOMRange];
     if([matches isKindOfClass:[NSTimer class]])
     {
         matches = [(NSTimer*)matches userInfo];
@@ -296,7 +297,6 @@
         
         if(![currentQuery.selectionAfterHighlight objectForKey:@"startContainer"] || ![currentQuery.selectionAfterHighlight objectForKey:@"endContainer"])
         {
-            DOMRange *range = [self selectedDOMRange];
             DOMNode *expectedStart = [currentQuery.selectionAfterHighlight objectForKey:@"expectedStart"];
             DOMNode *expectedEnd = [currentQuery.selectionAfterHighlight objectForKey:@"expectedEnd"];
             if(range || expectedStart || expectedEnd)
@@ -467,6 +467,18 @@
     }
     @catch (NSException *exception) {
     }
+}
+
+// You should call this from your delegate, I couldn't find a way of knowing when a new page is loaded
+- (void)didStartProvisionalLoad
+{
+    [self invalidateTimers];
+    [scrollHighlighter removeFromSuperview];
+    self.scrollHighlighter = nil;
+    self.currentQuery = nil;
+    self.highlightedMatches = [NSMutableArray array];
+    self.matchedTexts = [NSMutableArray array];
+    self.entirePageContent = [NSMutableString string];
 }
 
 - (void)dealloc
