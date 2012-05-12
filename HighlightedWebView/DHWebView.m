@@ -469,6 +469,11 @@
     }
 }
 
+- (BOOL)maintainsInactiveSelection
+{
+    return YES;
+}
+
 // You should call this from your delegate, I couldn't find a way of knowing when a new page is loaded
 - (void)didStartProvisionalLoad
 {
