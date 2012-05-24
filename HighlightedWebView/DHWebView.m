@@ -486,6 +486,27 @@
     self.entirePageContent = [NSMutableString string];
 }
 
+- (void)makeTextLarger:(id)sender
+{
+    [super makeTextLarger:sender];
+    [[NSUserDefaults standardUserDefaults] setFloat:[self textSizeMultiplier] forKey:@"DHHighlightedWebViewTextSizeMultiplier"];
+}
+
+- (void)makeTextSmaller:(id)sender
+{
+    [super makeTextSmaller:sender];
+    [[NSUserDefaults standardUserDefaults] setFloat:[self textSizeMultiplier] forKey:@"DHHighlightedWebViewTextSizeMultiplier"];
+}
+
+- (void)awakeFromNib
+{
+    float textSizeMultiplier = [[NSUserDefaults standardUserDefaults] floatForKey:@"DHHighlightedWebViewTextSizeMultiplier"];
+    if(textSizeMultiplier > 0)
+    {
+        [self setTextSizeMultiplier:textSizeMultiplier];
+    }
+}
+
 - (void)dealloc
 {
     [self invalidateTimers];
