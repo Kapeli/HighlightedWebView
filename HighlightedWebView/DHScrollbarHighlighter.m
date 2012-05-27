@@ -18,7 +18,7 @@
     if(scrollView && scrollView.verticalScroller && scrollView.verticalScroller.frame.origin.x > 0)
     {
         NSRect scrollerFrame = [scrollView verticalScroller].frame;
-        NSRect knobRect = [[scrollView verticalScroller] rectForPart:NSScrollerKnob];
+        NSRect knobRect = [[scrollView verticalScroller] rectForPart:NSScrollerKnobSlot];
         [self initWithFrame:NSMakeRect(scrollerFrame.origin.x+knobRect.origin.x, scrollerFrame.origin.y, knobRect.size.width, scrollerFrame.size.height)];
         if(self)
         {
@@ -47,8 +47,8 @@
         int top = [self topPositionForElement:wrapperSpan];
         float flippedY = top / documentHeight * ownHeight;
         float actualY = ownHeight-flippedY;
-        actualY = (actualY <= 3) ? 3 : (actualY > ownHeight - 4) ? ownHeight-4 : actualY;
-        [rects addObject:[NSValue valueWithRect:NSMakeRect(0, actualY-1.5, ownWidth, 3)]];
+        actualY = (actualY <= 2) ? 2 : (actualY > ownHeight - 3) ? ownHeight-3 : actualY;
+        [rects addObject:[NSValue valueWithRect:NSMakeRect(0, actualY-1, ownWidth, 2)]];
     }
     for(NSValue *rectValue in rects)
     {
@@ -72,15 +72,12 @@
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-    NSColor *inner = [NSColor colorWithCalibratedRed:0.984f green:0.956f blue:0.788f alpha:0.5f];
-    NSColor *outer = [NSColor colorWithCalibratedRed:0.941f green:0.8f blue:0.203f alpha:0.8f];
+    NSColor *inner = [NSColor colorWithCalibratedRed:1.0000f green:0.8667f blue:0.0000f alpha:1.0000f];
     for(NSValue *highlightRect in highlightRects)
     {
         NSRect rect = [highlightRect rectValue];
         [inner set];
         NSRectFill(rect);
-        [outer set];
-        [NSBezierPath strokeRect:rect];
     }
 }
 
