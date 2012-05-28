@@ -15,12 +15,12 @@
 - (id)initWithWebView:(WebView *)aWebView andMatches:(NSArray *)someMatches
 {
     NSScrollView *scrollView = [[[[aWebView mainFrame] frameView] documentView] enclosingScrollView];
-    if(scrollView && scrollView.verticalScroller && scrollView.verticalScroller.frame.origin.x > 0)
+    if(scrollView && scrollView.verticalScroller && scrollView.verticalScroller.frame.origin.x > 0 && !scrollView.verticalScroller.isHidden)
     {
         NSRect scrollerFrame = [scrollView verticalScroller].frame;
-        NSRect horizontalRect = [scrollView horizontalScroller].frame;
+        NSRect horizontalRect = ([scrollView horizontalScroller].frame.origin.x >= 0 && !scrollView.horizontalScroller.isHidden) ? [scrollView horizontalScroller].frame : NSZeroRect;
         NSRect knobRect = [[scrollView verticalScroller] rectForPart:NSScrollerKnobSlot];
-        [self initWithFrame:NSMakeRect(scrollerFrame.origin.x+knobRect.origin.x, scrollerFrame.origin.y+horizontalRect.size.height, knobRect.size.width, scrollerFrame.size.height-horizontalRect.size.height)];
+        [self initWithFrame:NSMakeRect(scrollerFrame.origin.x+knobRect.origin.x, scrollerFrame.origin.y+horizontalRect.size.height, knobRect.size.width, scrollerFrame.size.height)];
         if(self)
         {
             self.parentView = aWebView;
@@ -47,7 +47,7 @@
         DOMHTMLElement *wrapperSpan = (DOMHTMLElement*)[matchedText highlightedSpan];
         int top = [self topPositionForElement:wrapperSpan];
         float flippedY = top / documentHeight * ownHeight;
-        float actualY = ownHeight-flippedY;
+        float actualY = lroundf(ownHeight-flippedY);
         actualY = (actualY <= 2) ? 2 : (actualY > ownHeight - 3) ? ownHeight-3 : actualY;
         [rects addObject:[NSValue valueWithRect:NSMakeRect(0, actualY-1, ownWidth, 2)]];
     }
