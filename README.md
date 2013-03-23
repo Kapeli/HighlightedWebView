@@ -1,3 +1,7 @@
+License
+==============
+Do whatever you want with this code. I only ask that you check out [Dash](http://kapeli.com/dash), my Snippet Manager and Documentation Browser app.
+
 HighlightedWebView
 ==================
 
@@ -14,4 +18,4 @@ Features:
 Project Goals:
 ==============
 * Avoid JavaScript.
-* Avoid blocking the main thread as much as possible
+* Avoid blocking the main thread as much as possible.
