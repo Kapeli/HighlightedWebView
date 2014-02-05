@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "HighlightedWebView"
-  s.version      = "0.0.1"
+  s.version      = "1.0.0"
   s.summary      = "WebView subclass that highlights all search results (Safari-style wannabe)"
 
   s.description  = <<-DESC
@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.social_media_url = "http://twitter.com/kapeli"
 
   s.platform         = :osx
-  s.source           = { :git => "https://github.com/Kapeli/HighlightedWebView.git", :commit => "748b95dd1e677b94d37c1ae19c4f720b279f359f" }
+  s.source           = { :git => "https://github.com/Kapeli/HighlightedWebView.git", :tag => "1.0.0" }
 
   s.source_files     = "HighlightedWebView/*.{h,m}"
   s.exclude_files    = "HighlightedWebView/DHAppDelegate.h", "HighlightedWebView/DHAppDelegate.m", "HighlightedWebView/main.m"
