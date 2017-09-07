@@ -1,7 +1,40 @@
 #import "DHWebView.h"
 #import "DHMatchedText.h"
+#import "DHSearchQuery.h"
+#import "DHScrollbarHighlighter.h"
 
 #import <QuartzCore/QuartzCore.h>
+
+@interface DHWebView () {
+    NSTimer *workerTimer;
+    DHSearchQuery *currentQuery;
+    NSMutableArray *highlightedMatches;
+    NSMutableArray *matchedTexts;
+    NSMutableString *entirePageContent;
+    DHScrollbarHighlighter *scrollHighlighter;
+}
+
+@property (retain) NSTimer *workerTimer;
+@property (retain) DHSearchQuery *currentQuery;
+@property (retain) NSMutableArray *highlightedMatches;
+@property (retain) NSMutableArray *matchedTexts;
+@property (retain) NSMutableString *entirePageContent;
+@property (retain) DHScrollbarHighlighter *scrollHighlighter;
+
+- (void)highlightQuery:(DHSearchQuery *)query;
+- (void)startClearingHighlights;
+- (void)clearHighlights;
+- (void)traverseNodes:(NSMutableArray *)nodes;
+- (void)highlightMatches;
+- (void)timeredHighlightOfMatches:(NSMutableArray *)matches;
+- (void)invalidateTimers;
+- (NSString *)normalizeWhitespaces:(NSString *)aString;
+- (void)selectRangeUsingEncodedDictionary:(NSMutableDictionary *)dictionary;
+- (void)clearSelection;
+- (void)tryToGuessSelection:(NSDictionary *)fromDict;
+- (void)didStartProvisionalLoad;
+
+@end
 
 const CFTimeInterval MaxWorkBudgetTime = 0.015;
 
