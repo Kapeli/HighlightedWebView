@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1A7E9B4D1F61B6BA00098FC0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A7E9B4C1F61B6BA00098FC0 /* QuartzCore.framework */; };
 		433DA6B4155A95340023C7D7 /* DHScrollbarHighlighter.m in Sources */ = {isa = PBXBuildFile; fileRef = 433DA6B3155A95340023C7D7 /* DHScrollbarHighlighter.m */; };
 		43F1FF7D1558185F0043B796 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43F1FF7C1558185F0043B796 /* WebKit.framework */; };
 		43F7F3821554F75D00879D86 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43F7F3811554F75D00879D86 /* Cocoa.framework */; };
@@ -33,6 +34,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1A7E9B4C1F61B6BA00098FC0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		433DA6B2155A95340023C7D7 /* DHScrollbarHighlighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DHScrollbarHighlighter.h; sourceTree = "<group>"; };
 		433DA6B3155A95340023C7D7 /* DHScrollbarHighlighter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DHScrollbarHighlighter.m; sourceTree = "<group>"; };
 		43F1FF7C1558185F0043B796 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
@@ -62,6 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A7E9B4D1F61B6BA00098FC0 /* QuartzCore.framework in Frameworks */,
 				43F1FF7D1558185F0043B796 /* WebKit.framework in Frameworks */,
 				43F7F3821554F75D00879D86 /* Cocoa.framework in Frameworks */,
 			);
@@ -90,6 +93,7 @@
 		43F7F3801554F75D00879D86 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1A7E9B4C1F61B6BA00098FC0 /* QuartzCore.framework */,
 				43F7F3811554F75D00879D86 /* Cocoa.framework */,
 				43F7F3831554F75D00879D86 /* Other Frameworks */,
 			);

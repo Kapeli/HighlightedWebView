@@ -1,6 +1,25 @@
 #import "DHWebView.h"
 #import "DHMatchedText.h"
 
+#import <QuartzCore/QuartzCore.h>
+
+const CFTimeInterval MaxWorkBudgetTime = 0.015;
+
+// Perform work within WorkBudget.
+// workUnit returns NO if there's more work to be done, YES if finished.
+// If it takes longer than MaxWorkBudgetTime to finish, continuation will be called to configure a timer to finish the work later.
+static void BudgetWork(BOOL (^workUnit)(), void (^continuation)()) {
+    double start = CACurrentMediaTime(), stop;
+    BOOL finished;
+    do {
+        finished = workUnit();
+        stop = CACurrentMediaTime();
+    } while (!finished && (stop - start) < MaxWorkBudgetTime);
+    if (!finished) {
+        continuation();
+    }
+}
+
 @implementation DHWebView
 
 @synthesize currentQuery;
@@ -59,8 +78,7 @@
 - (void)clearHighlights
 {
     DOMRange *range = [self selectedDOMRange];
-    for(int i = 0; i < 100; i++)
-    {
+    BudgetWork(^{
         if(!highlightedMatches.count)
         {
             self.highlightedMatches = [NSMutableArray array];
@@ -68,23 +86,23 @@
             self.entirePageContent = [NSMutableString string];
             if(!currentQuery.query.length)
             {
-                return;
+                return YES;
             }
             DOMDocument *document = [self mainFrameDocument];
             DOMHTMLElement *body = [document body];
             if(!body)
             {
-                return;
+                return YES;
             }
             [self tryToGuessSelection:currentQuery.selectionAfterClear];
             [self traverseNodes:[NSMutableArray arrayWithObject:body]];
-            return;
+            return YES;
         }
         DHMatchedText *match = [highlightedMatches objectAtIndex:0];
         [match retain];
         [highlightedMatches removeObjectAtIndex:0];
         if(![currentQuery.selectionAfterClear objectForKey:@"startContainer"] || ![currentQuery.selectionAfterClear objectForKey:@"endContainer"])
-        { 
+        {
             DOMNode *expectedStart = [currentQuery.selectionAfterClear objectForKey:@"expectedStart"];
             DOMNode *expectedEnd = [currentQuery.selectionAfterClear objectForKey:@"expectedEnd"];
             if(range || expectedStart || expectedEnd)
@@ -174,18 +192,20 @@
             [match clearHighlight];
         }
         [match release];
-    }
-    self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f target:self selector:@selector(clearHighlights) userInfo:nil repeats:NO];
+        
+        return NO; // !finished
+    }, ^{
+        self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f target:self selector:@selector(clearHighlights) userInfo:nil repeats:NO];
+    });
 }
 
 - (void)traverseNodes:(NSMutableArray *)nodes
 {
-    for(int i = 0; i < 500; i++)
-    {
+    BudgetWork(^BOOL{
         if(!nodes.count)
         {
             [self highlightMatches];
-            return;
+            return YES; // all done
         }
         DOMNode *node = [nodes objectAtIndex:0];
         [node retain];
@@ -193,7 +213,7 @@
         if(node.nodeType == DOM_TEXT_NODE || node.nodeType == DOM_CDATA_SECTION_NODE)
         {
             DOMText *textNode = (DOMText *)node;
-  
+            
             NSString *content = [self normalizeWhitespaces:[textNode nodeValue]];
             if(content.length)
             {
@@ -215,8 +235,10 @@
             }
         }
         [node release];
-    }
-    self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f target:self selector:@selector(traverseWithTimer:) userInfo:nodes repeats:NO];
+        return NO; // not finished yet
+    }, ^{
+        self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f target:self selector:@selector(traverseWithTimer:) userInfo:nodes repeats:NO];
+    });
 }
 
 - (void)traverseWithTimer:(NSTimer *)timer
@@ -283,13 +305,13 @@
     {
         matches = [(NSTimer*)matches userInfo];
     }
-    for(int i = 0; i < 100; i++)
-    {
+    
+    BudgetWork(^BOOL{
         if(!matches.count)
         {
             [self tryToGuessSelection:currentQuery.selectionAfterHighlight];
             self.scrollHighlighter = [DHScrollbarHighlighter highlighterWithWebView:self andMatches:highlightedMatches];
-            return;
+            return YES; // all done
         }
         DHMatchedText *last = [matches lastObject];
         [highlightedMatches addObject:last];
@@ -340,8 +362,11 @@
         {
             [last highlightDOMNode];
         }
-    }
-    self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f target:self selector:@selector(timeredHighlightOfMatches:) userInfo:matches repeats:NO];
+        return NO; // more work to do
+    }, ^{
+        self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f target:self selector:@selector(timeredHighlightOfMatches:) userInfo:matches repeats:NO];
+    });
+    
 }
 
 - (void)invalidateTimers
