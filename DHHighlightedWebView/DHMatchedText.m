@@ -8,6 +8,8 @@
 @synthesize highlightedSpan;
 @synthesize foundRanges;
 @synthesize firstMatch;
+@synthesize focusedRangeIndex;
+@synthesize focusedSpan;
 
 + (DHMatchedText *)matchedTextWithDOMText:(DOMText *)aText andRange:(NSRange)aRange
 {
@@ -23,6 +25,7 @@
         self.effectiveRange = aRange;
         self.foundRanges = [NSMutableArray array];
         self.originalText = [NSString stringWithString:[text nodeValue]];
+        focusedRangeIndex = NSNotFound;
     }
     return self;
 }
@@ -30,6 +33,7 @@
 - (void)highlightDOMNode
 {
     self.firstMatch = nil;
+    self.focusedSpan = nil;
     if(!foundRanges.count)
     {
         return;
@@ -50,6 +54,7 @@
     [parent replaceChild:spanWrap oldChild:text];
     
     NSRange previousRange = NSMakeRange(0, 0);
+    NSInteger i = 0;
     for(NSValue *foundRange in foundRanges)
     {
         NSRange range = [foundRange rangeValue];
@@ -60,7 +65,10 @@
             [spanWrap appendChild:aText];
         }
         DOMElement *aSpan = [document createElement:@"span"];
-        [aSpan setAttribute:@"style" value:DHHighlightSpan];
+        [aSpan setAttribute:@"style" value:i==focusedRangeIndex?DHFocusSpan:DHHighlightSpan];
+        if (i == focusedRangeIndex) {
+            self.focusedSpan = aSpan;
+        }
         if(text)
         {
             [text setNodeValue:[originalText substringWithRange:range]];
@@ -75,6 +83,7 @@
         }
         [spanWrap appendChild:aSpan];
         previousRange = range;
+        i++;
     }
     if(previousRange.location + previousRange.length < originalText.length)
     {
@@ -96,6 +105,18 @@
     self.text = original;
     [parent replaceChild:text oldChild:highlightedSpan];
     self.highlightedSpan = nil;
+    self.focusedSpan = nil;
+    focusedRangeIndex = NSNotFound;
+}
+
+- (void)setFocusedRangeIndex:(NSInteger)idx {
+    NSAssert(idx == NSNotFound || (idx >= 0 && idx < foundRanges.count), @"focusedRangeIndex must be in foundRanges, or NSNotFound");
+    if (focusedRangeIndex != idx) {
+        [self clearHighlight];
+        focusedRangeIndex = idx;
+        [self highlightDOMNode];
+        [focusedSpan scrollIntoViewIfNeeded:YES];
+    }
 }
 
 - (void)dealloc
@@ -105,6 +126,7 @@
     [highlightedSpan release];
     [originalText release];
     [foundRanges release];
+    [focusedSpan release];
     [super dealloc];
 }
 @end

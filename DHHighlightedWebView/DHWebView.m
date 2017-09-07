@@ -16,6 +16,7 @@
 
 @property (retain) NSTimer *workerTimer;
 @property (retain) DHSearchQuery *currentQuery;
+@property (retain) DHSearchQuery *focusQuery;
 @property (retain) NSMutableArray *highlightedMatches;
 @property (retain) NSMutableArray *matchedTexts;
 @property (retain) NSMutableString *entirePageContent;
@@ -55,6 +56,7 @@ static void BudgetWork(BOOL (^workUnit)(), void (^continuation)()) {
 
 @implementation DHWebView
 
+@synthesize focusQuery;
 @synthesize currentQuery;
 @synthesize workerTimer;
 @synthesize highlightedMatches;
@@ -67,21 +69,44 @@ static void BudgetWork(BOOL (^workUnit)(), void (^continuation)()) {
     if(!string.length)
     {
         self.currentQuery = nil;
+        self.focusQuery = nil;
         [self startClearingHighlights];
         return NO;
     }
     DHSearchQuery *query = [DHSearchQuery searchQueryWithQuery:string caseSensitive:caseFlag];
-    BOOL result = [super searchFor:string direction:forward caseSensitive:caseFlag wrap:wrapFlag];
-    if(result)
-    {
-        [self highlightQuery:query];
+    
+    [self highlightQuery:query];
+    
+    if (highlightedMatches.count == 0) {
+        return NO; // couldn't find anything
     }
-    else
-    {
-        self.currentQuery = nil;
-        [self startClearingHighlights];
+    
+    BOOL didFocus = NO;
+    BOOL focusNext = NO;
+    for (DHMatchedText *highlighted in highlightedMatches) {
+        if (didFocus && highlighted.focusedRangeIndex != NSNotFound) {
+            highlighted.focusedRangeIndex = NSNotFound;
+        }
+        if (focusNext && highlighted.foundRanges.count) {
+            highlighted.focusedRangeIndex = 0;
+            focusNext = NO;
+            didFocus = YES;
+        } else if (highlighted.focusedRangeIndex != NSNotFound) {
+            if (highlighted.focusedRangeIndex + 1 < highlighted.foundRanges.count) {
+                highlighted.focusedRangeIndex += 1;
+                didFocus = YES;
+            } else {
+                highlighted.focusedRangeIndex = NSNotFound;
+                focusNext = YES;
+            }
+        }
     }
-    return result;
+    
+    if (!didFocus && (!focusNext || wrapFlag)) {
+        [[highlightedMatches objectAtIndex:0] setFocusedRangeIndex:0];
+    }
+    
+    return YES;
 }
 
 - (void)highlightQuery:(NSString *)aQuery caseSensitive:(BOOL)isCaseSensitive
@@ -342,6 +367,23 @@ static void BudgetWork(BOOL (^workUnit)(), void (^continuation)()) {
     BudgetWork(^BOOL{
         if(!matches.count)
         {
+            // sort all highlightedMatches so they're in the same order as they would be in an inorder traversal of the DOM
+            [highlightedMatches sortUsingComparator:^NSComparisonResult(DHMatchedText *a, DHMatchedText *b) {
+                NSRange ar = [a.foundRanges.firstObject rangeValue];
+                NSRange br = [b.foundRanges.firstObject rangeValue];
+                if (ar.location < br.location) {
+                    return NSOrderedAscending;
+                } else if (ar.location > br.location) {
+                    return NSOrderedDescending;
+                } else if (ar.length < br.length) {
+                    return NSOrderedAscending;
+                } else if (ar.length > br.length) {
+                    return NSOrderedDescending;
+                } else {
+                    return NSOrderedSame;
+                }
+            }];
+            
             [self tryToGuessSelection:currentQuery.selectionAfterHighlight];
             self.scrollHighlighter = [DHScrollbarHighlighter highlighterWithWebView:self andMatches:highlightedMatches];
             return YES; // all done
@@ -568,6 +610,7 @@ static void BudgetWork(BOOL (^workUnit)(), void (^continuation)()) {
 - (void)dealloc
 {
     [self invalidateTimers];
+    [focusQuery release];
     [currentQuery release];
     [highlightedMatches release];
     [matchedTexts release];
