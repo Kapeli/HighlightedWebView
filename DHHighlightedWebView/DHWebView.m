@@ -263,6 +263,15 @@ static void BudgetWork(BOOL (^workUnit)(), void (^continuation)()) {
     });
 }
 
+static BOOL shouldSearchDOMElement(DOMElement *e) {
+    NSString *tagName = [e tagName];
+    if ([tagName isEqualToString:@"INPUT"] || [tagName isEqualToString:@"TEXTAREA"] || [tagName isEqualToString:@"STYLE"] || [tagName isEqualToString:@"HEAD"] || [tagName isEqualToString:@"SCRIPT"])
+    {
+        return NO;
+    }
+    return YES;
+}
+
 - (void)traverseNodes:(NSMutableArray *)nodes
 {
     BudgetWork(^BOOL{
@@ -288,8 +297,7 @@ static void BudgetWork(BOOL (^workUnit)(), void (^continuation)()) {
         }
         if(node.nodeType == DOM_ELEMENT_NODE)
         {
-            NSString *tagName = [(DOMElement*)node tagName];
-            if(![tagName isCaseInsensitiveLike:@"style"] && ![tagName isCaseInsensitiveLike:@"script"])
+            if (shouldSearchDOMElement((DOMElement *)node))
             {
                 DOMNodeList *childNodes = [node childNodes];
                 for(int i = 0; i < childNodes.length; i++)
