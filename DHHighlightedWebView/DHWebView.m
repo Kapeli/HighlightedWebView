@@ -83,17 +83,23 @@ static void BudgetWork(BOOL (^workUnit)(), void (^continuation)()) {
     
     BOOL didFocus = NO;
     BOOL focusNext = NO;
-    for (DHMatchedText *highlighted in highlightedMatches) {
+    
+    NSEnumerator *e = forward ? highlightedMatches.objectEnumerator : highlightedMatches.reverseObjectEnumerator;
+    
+    for (DHMatchedText *highlighted in e) {
         if (didFocus && highlighted.focusedRangeIndex != NSNotFound) {
             highlighted.focusedRangeIndex = NSNotFound;
         }
         if (focusNext && highlighted.foundRanges.count) {
-            highlighted.focusedRangeIndex = 0;
+            highlighted.focusedRangeIndex = forward ? 0 : highlighted.foundRanges.count - 1;
             focusNext = NO;
             didFocus = YES;
         } else if (highlighted.focusedRangeIndex != NSNotFound) {
-            if (highlighted.focusedRangeIndex + 1 < highlighted.foundRanges.count) {
+            if (forward && highlighted.focusedRangeIndex + 1 < highlighted.foundRanges.count) {
                 highlighted.focusedRangeIndex += 1;
+                didFocus = YES;
+            } else if (!forward && highlighted.focusedRangeIndex > 0) {
+                highlighted.focusedRangeIndex -= 1;
                 didFocus = YES;
             } else {
                 highlighted.focusedRangeIndex = NSNotFound;
