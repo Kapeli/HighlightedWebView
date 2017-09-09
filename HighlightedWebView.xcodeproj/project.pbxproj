@@ -7,7 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		433DA6B4155A95340023C7D7 /* DHScrollbarHighlighter.m in Sources */ = {isa = PBXBuildFile; fileRef = 433DA6B3155A95340023C7D7 /* DHScrollbarHighlighter.m */; };
+		1A7E9B4D1F61B6BA00098FC0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A7E9B4C1F61B6BA00098FC0 /* QuartzCore.framework */; };
+		1A7E9B571F61BF0500098FC0 /* DHHighlightedWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A7E9B551F61BF0500098FC0 /* DHHighlightedWebView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A7E9B5A1F61BF0500098FC0 /* DHHighlightedWebView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A7E9B531F61BF0500098FC0 /* DHHighlightedWebView.framework */; };
+		1A7E9B5B1F61BF0500098FC0 /* DHHighlightedWebView.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1A7E9B531F61BF0500098FC0 /* DHHighlightedWebView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		1A7E9B5F1F61BF2000098FC0 /* DHWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F7F39E1554F77000879D86 /* DHWebView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A7E9B601F61BF2000098FC0 /* DHWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 43F7F39F1554F77000879D86 /* DHWebView.m */; };
+		1A7E9B611F61BF2000098FC0 /* DHScrollbarHighlighter.h in Headers */ = {isa = PBXBuildFile; fileRef = 433DA6B2155A95340023C7D7 /* DHScrollbarHighlighter.h */; };
+		1A7E9B621F61BF2000098FC0 /* DHScrollbarHighlighter.m in Sources */ = {isa = PBXBuildFile; fileRef = 433DA6B3155A95340023C7D7 /* DHScrollbarHighlighter.m */; };
+		1A7E9B631F61BF2000098FC0 /* DHSearchQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F7F3AE155508BB00879D86 /* DHSearchQuery.h */; };
+		1A7E9B641F61BF2000098FC0 /* DHSearchQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 43F7F3AF155508BB00879D86 /* DHSearchQuery.m */; };
+		1A7E9B651F61BF2000098FC0 /* DHMatchedText.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F7F3B8155566D700879D86 /* DHMatchedText.h */; };
+		1A7E9B661F61BF2000098FC0 /* DHMatchedText.m in Sources */ = {isa = PBXBuildFile; fileRef = 43F7F3B9155566D700879D86 /* DHMatchedText.m */; };
 		43F1FF7D1558185F0043B796 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43F1FF7C1558185F0043B796 /* WebKit.framework */; };
 		43F7F3821554F75D00879D86 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43F7F3811554F75D00879D86 /* Cocoa.framework */; };
 		43F7F38C1554F75D00879D86 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 43F7F38A1554F75D00879D86 /* InfoPlist.strings */; };
@@ -15,10 +26,17 @@
 		43F7F3921554F75D00879D86 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 43F7F3901554F75D00879D86 /* Credits.rtf */; };
 		43F7F3951554F75D00879D86 /* DHAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 43F7F3941554F75D00879D86 /* DHAppDelegate.m */; };
 		43F7F3981554F75D00879D86 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43F7F3961554F75D00879D86 /* MainMenu.xib */; };
-		43F7F3A01554F77000879D86 /* DHWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 43F7F39F1554F77000879D86 /* DHWebView.m */; };
-		43F7F3B0155508BB00879D86 /* DHSearchQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 43F7F3AF155508BB00879D86 /* DHSearchQuery.m */; };
-		43F7F3BA155566D700879D86 /* DHMatchedText.m in Sources */ = {isa = PBXBuildFile; fileRef = 43F7F3B9155566D700879D86 /* DHMatchedText.m */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		1A7E9B581F61BF0500098FC0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 43F7F3741554F75D00879D86 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A7E9B521F61BF0500098FC0;
+			remoteInfo = DHHighlightedWebView;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		43D497F1155730A000F64F00 /* CopyFiles */ = {
@@ -27,12 +45,17 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				1A7E9B5B1F61BF0500098FC0 /* DHHighlightedWebView.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1A7E9B4C1F61B6BA00098FC0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		1A7E9B531F61BF0500098FC0 /* DHHighlightedWebView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DHHighlightedWebView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A7E9B551F61BF0500098FC0 /* DHHighlightedWebView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DHHighlightedWebView.h; sourceTree = "<group>"; };
+		1A7E9B561F61BF0500098FC0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		433DA6B2155A95340023C7D7 /* DHScrollbarHighlighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DHScrollbarHighlighter.h; sourceTree = "<group>"; };
 		433DA6B3155A95340023C7D7 /* DHScrollbarHighlighter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DHScrollbarHighlighter.m; sourceTree = "<group>"; };
 		43F1FF7C1558185F0043B796 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
@@ -58,10 +81,19 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		1A7E9B4F1F61BF0500098FC0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		43F7F37A1554F75D00879D86 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A7E9B5A1F61BF0500098FC0 /* DHHighlightedWebView.framework in Frameworks */,
+				1A7E9B4D1F61B6BA00098FC0 /* QuartzCore.framework in Frameworks */,
 				43F1FF7D1558185F0043B796 /* WebKit.framework in Frameworks */,
 				43F7F3821554F75D00879D86 /* Cocoa.framework in Frameworks */,
 			);
@@ -70,10 +102,28 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1A7E9B541F61BF0500098FC0 /* DHHighlightedWebView */ = {
+			isa = PBXGroup;
+			children = (
+				43F7F39E1554F77000879D86 /* DHWebView.h */,
+				43F7F39F1554F77000879D86 /* DHWebView.m */,
+				433DA6B2155A95340023C7D7 /* DHScrollbarHighlighter.h */,
+				433DA6B3155A95340023C7D7 /* DHScrollbarHighlighter.m */,
+				43F7F3AE155508BB00879D86 /* DHSearchQuery.h */,
+				43F7F3AF155508BB00879D86 /* DHSearchQuery.m */,
+				43F7F3B8155566D700879D86 /* DHMatchedText.h */,
+				43F7F3B9155566D700879D86 /* DHMatchedText.m */,
+				1A7E9B551F61BF0500098FC0 /* DHHighlightedWebView.h */,
+				1A7E9B561F61BF0500098FC0 /* Info.plist */,
+			);
+			path = DHHighlightedWebView;
+			sourceTree = "<group>";
+		};
 		43F7F3721554F75D00879D86 = {
 			isa = PBXGroup;
 			children = (
 				43F7F3871554F75D00879D86 /* HighlightedWebView */,
+				1A7E9B541F61BF0500098FC0 /* DHHighlightedWebView */,
 				43F7F3801554F75D00879D86 /* Frameworks */,
 				43F7F37E1554F75D00879D86 /* Products */,
 			);
@@ -83,6 +133,7 @@
 			isa = PBXGroup;
 			children = (
 				43F7F37D1554F75D00879D86 /* HighlightedWebView.app */,
+				1A7E9B531F61BF0500098FC0 /* DHHighlightedWebView.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -90,6 +141,7 @@
 		43F7F3801554F75D00879D86 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1A7E9B4C1F61B6BA00098FC0 /* QuartzCore.framework */,
 				43F7F3811554F75D00879D86 /* Cocoa.framework */,
 				43F7F3831554F75D00879D86 /* Other Frameworks */,
 			);
@@ -112,14 +164,6 @@
 			children = (
 				43F7F3931554F75D00879D86 /* DHAppDelegate.h */,
 				43F7F3941554F75D00879D86 /* DHAppDelegate.m */,
-				43F7F39E1554F77000879D86 /* DHWebView.h */,
-				43F7F39F1554F77000879D86 /* DHWebView.m */,
-				433DA6B2155A95340023C7D7 /* DHScrollbarHighlighter.h */,
-				433DA6B3155A95340023C7D7 /* DHScrollbarHighlighter.m */,
-				43F7F3AE155508BB00879D86 /* DHSearchQuery.h */,
-				43F7F3AF155508BB00879D86 /* DHSearchQuery.m */,
-				43F7F3B8155566D700879D86 /* DHMatchedText.h */,
-				43F7F3B9155566D700879D86 /* DHMatchedText.m */,
 				43F7F3961554F75D00879D86 /* MainMenu.xib */,
 				43F7F3881554F75D00879D86 /* Supporting Files */,
 			);
@@ -140,7 +184,40 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		1A7E9B501F61BF0500098FC0 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A7E9B5F1F61BF2000098FC0 /* DHWebView.h in Headers */,
+				1A7E9B651F61BF2000098FC0 /* DHMatchedText.h in Headers */,
+				1A7E9B631F61BF2000098FC0 /* DHSearchQuery.h in Headers */,
+				1A7E9B571F61BF0500098FC0 /* DHHighlightedWebView.h in Headers */,
+				1A7E9B611F61BF2000098FC0 /* DHScrollbarHighlighter.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
+		1A7E9B521F61BF0500098FC0 /* DHHighlightedWebView */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1A7E9B5E1F61BF0500098FC0 /* Build configuration list for PBXNativeTarget "DHHighlightedWebView" */;
+			buildPhases = (
+				1A7E9B4E1F61BF0500098FC0 /* Sources */,
+				1A7E9B4F1F61BF0500098FC0 /* Frameworks */,
+				1A7E9B501F61BF0500098FC0 /* Headers */,
+				1A7E9B511F61BF0500098FC0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DHHighlightedWebView;
+			productName = DHHighlightedWebView;
+			productReference = 1A7E9B531F61BF0500098FC0 /* DHHighlightedWebView.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		43F7F37C1554F75D00879D86 /* HighlightedWebView */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 43F7F39B1554F75D00879D86 /* Build configuration list for PBXNativeTarget "HighlightedWebView" */;
@@ -153,6 +230,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				1A7E9B591F61BF0500098FC0 /* PBXTargetDependency */,
 			);
 			name = HighlightedWebView;
 			productName = HighlightedWebView;
@@ -167,6 +245,12 @@
 			attributes = {
 				CLASSPREFIX = DH;
 				LastUpgradeCheck = 0430;
+				TargetAttributes = {
+					1A7E9B521F61BF0500098FC0 = {
+						CreatedOnToolsVersion = 8.3.3;
+						ProvisioningStyle = Automatic;
+					};
+				};
 			};
 			buildConfigurationList = 43F7F3771554F75D00879D86 /* Build configuration list for PBXProject "HighlightedWebView" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -181,11 +265,19 @@
 			projectRoot = "";
 			targets = (
 				43F7F37C1554F75D00879D86 /* HighlightedWebView */,
+				1A7E9B521F61BF0500098FC0 /* DHHighlightedWebView */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		1A7E9B511F61BF0500098FC0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		43F7F37B1554F75D00879D86 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -199,20 +291,35 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1A7E9B4E1F61BF0500098FC0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A7E9B621F61BF2000098FC0 /* DHScrollbarHighlighter.m in Sources */,
+				1A7E9B661F61BF2000098FC0 /* DHMatchedText.m in Sources */,
+				1A7E9B601F61BF2000098FC0 /* DHWebView.m in Sources */,
+				1A7E9B641F61BF2000098FC0 /* DHSearchQuery.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		43F7F3791554F75D00879D86 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				43F7F38E1554F75D00879D86 /* main.m in Sources */,
 				43F7F3951554F75D00879D86 /* DHAppDelegate.m in Sources */,
-				43F7F3A01554F77000879D86 /* DHWebView.m in Sources */,
-				43F7F3B0155508BB00879D86 /* DHSearchQuery.m in Sources */,
-				43F7F3BA155566D700879D86 /* DHMatchedText.m in Sources */,
-				433DA6B4155A95340023C7D7 /* DHScrollbarHighlighter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1A7E9B591F61BF0500098FC0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1A7E9B521F61BF0500098FC0 /* DHHighlightedWebView */;
+			targetProxy = 1A7E9B581F61BF0500098FC0 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		43F7F38A1554F75D00879D86 /* InfoPlist.strings */ = {
@@ -242,6 +349,106 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		1A7E9B5C1F61BF0500098FC0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_VERSION = A;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = DHHighlightedWebView/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = dh.DHHighlightedWebView;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		1A7E9B5D1F61BF0500098FC0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_VERSION = A;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = DHHighlightedWebView/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = dh.DHHighlightedWebView;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 		43F7F3991554F75D00879D86 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -264,7 +471,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx10.6;
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -283,13 +490,14 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				SDKROOT = macosx10.6;
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};
 		43F7F39C1554F75D00879D86 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
@@ -297,6 +505,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HighlightedWebView/HighlightedWebView-Prefix.pch";
 				INFOPLIST_FILE = "HighlightedWebView/HighlightedWebView-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
@@ -309,6 +518,7 @@
 		43F7F39D1554F75D00879D86 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
@@ -316,6 +526,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HighlightedWebView/HighlightedWebView-Prefix.pch";
 				INFOPLIST_FILE = "HighlightedWebView/HighlightedWebView-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
@@ -328,6 +539,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1A7E9B5E1F61BF0500098FC0 /* Build configuration list for PBXNativeTarget "DHHighlightedWebView" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1A7E9B5C1F61BF0500098FC0 /* Debug */,
+				1A7E9B5D1F61BF0500098FC0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		43F7F3771554F75D00879D86 /* Build configuration list for PBXProject "HighlightedWebView" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

@@ -20,7 +20,7 @@
         NSRect scrollerFrame = [scrollView verticalScroller].frame;
         NSRect horizontalRect = ([scrollView horizontalScroller].frame.origin.x >= 0 && !scrollView.horizontalScroller.isHidden) ? [scrollView horizontalScroller].frame : NSZeroRect;
         NSRect knobRect = [[scrollView verticalScroller] rectForPart:NSScrollerKnobSlot];
-        [self initWithFrame:NSMakeRect(scrollerFrame.origin.x+knobRect.origin.x, scrollerFrame.origin.y+horizontalRect.size.height, knobRect.size.width, scrollerFrame.size.height)];
+        self = [super initWithFrame:NSMakeRect(scrollerFrame.origin.x+knobRect.origin.x, scrollerFrame.origin.y+horizontalRect.size.height, knobRect.size.width, scrollerFrame.size.height)];
         if(self)
         {
             self.parentView = aWebView;
@@ -33,6 +33,7 @@
         }
         return self;
     }
+    [self release];
     return nil;
 }
 

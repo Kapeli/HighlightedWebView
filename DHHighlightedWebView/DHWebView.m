@@ -1,8 +1,62 @@
 #import "DHWebView.h"
 #import "DHMatchedText.h"
+#import "DHSearchQuery.h"
+#import "DHScrollbarHighlighter.h"
+
+#import <QuartzCore/QuartzCore.h>
+
+@interface DHWebView () {
+    NSTimer *workerTimer;
+    DHSearchQuery *currentQuery;
+    NSMutableArray *highlightedMatches;
+    NSMutableArray *matchedTexts;
+    NSMutableString *entirePageContent;
+    DHScrollbarHighlighter *scrollHighlighter;
+}
+
+@property (retain) NSTimer *workerTimer;
+@property (retain) DHSearchQuery *currentQuery;
+@property (retain) DHSearchQuery *focusQuery;
+@property (retain) NSMutableArray *highlightedMatches;
+@property (retain) NSMutableArray *matchedTexts;
+@property (retain) NSMutableString *entirePageContent;
+@property (retain) DHScrollbarHighlighter *scrollHighlighter;
+
+- (void)highlightQuery:(DHSearchQuery *)query;
+- (void)startClearingHighlights;
+- (void)clearHighlights;
+- (void)traverseNodes:(NSMutableArray *)nodes;
+- (void)highlightMatches;
+- (void)timeredHighlightOfMatches:(NSMutableArray *)matches;
+- (void)invalidateTimers;
+- (NSString *)normalizeWhitespaces:(NSString *)aString;
+- (void)selectRangeUsingEncodedDictionary:(NSMutableDictionary *)dictionary;
+- (void)clearSelection;
+- (void)tryToGuessSelection:(NSDictionary *)fromDict;
+- (void)didStartProvisionalLoad;
+
+@end
+
+const CFTimeInterval MaxWorkBudgetTime = 0.015;
+
+// Perform work within WorkBudget.
+// workUnit returns NO if there's more work to be done, YES if finished.
+// If it takes longer than MaxWorkBudgetTime to finish, continuation will be called to configure a timer to finish the work later.
+static void BudgetWork(BOOL (^workUnit)(), void (^continuation)()) {
+    double start = CACurrentMediaTime(), stop;
+    BOOL finished;
+    do {
+        finished = workUnit();
+        stop = CACurrentMediaTime();
+    } while (!finished && (stop - start) < MaxWorkBudgetTime);
+    if (!finished) {
+        continuation();
+    }
+}
 
 @implementation DHWebView
 
+@synthesize focusQuery;
 @synthesize currentQuery;
 @synthesize workerTimer;
 @synthesize highlightedMatches;
@@ -15,21 +69,50 @@
     if(!string.length)
     {
         self.currentQuery = nil;
+        self.focusQuery = nil;
         [self startClearingHighlights];
         return NO;
     }
     DHSearchQuery *query = [DHSearchQuery searchQueryWithQuery:string caseSensitive:caseFlag];
-    BOOL result = [super searchFor:string direction:forward caseSensitive:caseFlag wrap:wrapFlag];
-    if(result)
-    {
-        [self highlightQuery:query];
+    
+    [self highlightQuery:query];
+    
+    if (highlightedMatches.count == 0) {
+        return NO; // couldn't find anything
     }
-    else
-    {
-        self.currentQuery = nil;
-        [self startClearingHighlights];
+    
+    BOOL didFocus = NO;
+    BOOL focusNext = NO;
+    
+    NSEnumerator *e = forward ? highlightedMatches.objectEnumerator : highlightedMatches.reverseObjectEnumerator;
+    
+    for (DHMatchedText *highlighted in e) {
+        if (didFocus && highlighted.focusedRangeIndex != NSNotFound) {
+            highlighted.focusedRangeIndex = NSNotFound;
+        }
+        if (focusNext && highlighted.foundRanges.count) {
+            highlighted.focusedRangeIndex = forward ? 0 : highlighted.foundRanges.count - 1;
+            focusNext = NO;
+            didFocus = YES;
+        } else if (highlighted.focusedRangeIndex != NSNotFound) {
+            if (forward && highlighted.focusedRangeIndex + 1 < highlighted.foundRanges.count) {
+                highlighted.focusedRangeIndex += 1;
+                didFocus = YES;
+            } else if (!forward && highlighted.focusedRangeIndex > 0) {
+                highlighted.focusedRangeIndex -= 1;
+                didFocus = YES;
+            } else {
+                highlighted.focusedRangeIndex = NSNotFound;
+                focusNext = YES;
+            }
+        }
     }
-    return result;
+    
+    if (!didFocus && (!focusNext || wrapFlag)) {
+        [[highlightedMatches objectAtIndex:0] setFocusedRangeIndex:0];
+    }
+    
+    return YES;
 }
 
 - (void)highlightQuery:(NSString *)aQuery caseSensitive:(BOOL)isCaseSensitive
@@ -59,8 +142,7 @@
 - (void)clearHighlights
 {
     DOMRange *range = [self selectedDOMRange];
-    for(int i = 0; i < 100; i++)
-    {
+    BudgetWork(^{
         if(!highlightedMatches.count)
         {
             self.highlightedMatches = [NSMutableArray array];
@@ -68,23 +150,23 @@
             self.entirePageContent = [NSMutableString string];
             if(!currentQuery.query.length)
             {
-                return;
+                return YES;
             }
             DOMDocument *document = [self mainFrameDocument];
             DOMHTMLElement *body = [document body];
             if(!body)
             {
-                return;
+                return YES;
             }
             [self tryToGuessSelection:currentQuery.selectionAfterClear];
             [self traverseNodes:[NSMutableArray arrayWithObject:body]];
-            return;
+            return YES;
         }
         DHMatchedText *match = [highlightedMatches objectAtIndex:0];
         [match retain];
         [highlightedMatches removeObjectAtIndex:0];
         if(![currentQuery.selectionAfterClear objectForKey:@"startContainer"] || ![currentQuery.selectionAfterClear objectForKey:@"endContainer"])
-        { 
+        {
             DOMNode *expectedStart = [currentQuery.selectionAfterClear objectForKey:@"expectedStart"];
             DOMNode *expectedEnd = [currentQuery.selectionAfterClear objectForKey:@"expectedEnd"];
             if(range || expectedStart || expectedEnd)
@@ -174,18 +256,29 @@
             [match clearHighlight];
         }
         [match release];
+        
+        return NO; // !finished
+    }, ^{
+        self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f target:self selector:@selector(clearHighlights) userInfo:nil repeats:NO];
+    });
+}
+
+static BOOL shouldSearchDOMElement(DOMElement *e) {
+    NSString *tagName = [e tagName];
+    if ([tagName isEqualToString:@"INPUT"] || [tagName isEqualToString:@"TEXTAREA"] || [tagName isEqualToString:@"STYLE"] || [tagName isEqualToString:@"HEAD"] || [tagName isEqualToString:@"SCRIPT"])
+    {
+        return NO;
     }
-    self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f target:self selector:@selector(clearHighlights) userInfo:nil repeats:NO];
+    return YES;
 }
 
 - (void)traverseNodes:(NSMutableArray *)nodes
 {
-    for(int i = 0; i < 500; i++)
-    {
+    BudgetWork(^BOOL{
         if(!nodes.count)
         {
             [self highlightMatches];
-            return;
+            return YES; // all done
         }
         DOMNode *node = [nodes objectAtIndex:0];
         [node retain];
@@ -193,7 +286,7 @@
         if(node.nodeType == DOM_TEXT_NODE || node.nodeType == DOM_CDATA_SECTION_NODE)
         {
             DOMText *textNode = (DOMText *)node;
-  
+            
             NSString *content = [self normalizeWhitespaces:[textNode nodeValue]];
             if(content.length)
             {
@@ -204,8 +297,7 @@
         }
         if(node.nodeType == DOM_ELEMENT_NODE)
         {
-            NSString *tagName = [(DOMElement*)node tagName];
-            if(![tagName isCaseInsensitiveLike:@"style"] && ![tagName isCaseInsensitiveLike:@"script"])
+            if (shouldSearchDOMElement((DOMElement *)node))
             {
                 DOMNodeList *childNodes = [node childNodes];
                 for(int i = 0; i < childNodes.length; i++)
@@ -215,8 +307,10 @@
             }
         }
         [node release];
-    }
-    self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f target:self selector:@selector(traverseWithTimer:) userInfo:nodes repeats:NO];
+        return NO; // not finished yet
+    }, ^{
+        self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f target:self selector:@selector(traverseWithTimer:) userInfo:nodes repeats:NO];
+    });
 }
 
 - (void)traverseWithTimer:(NSTimer *)timer
@@ -283,13 +377,30 @@
     {
         matches = [(NSTimer*)matches userInfo];
     }
-    for(int i = 0; i < 100; i++)
-    {
+    
+    BudgetWork(^BOOL{
         if(!matches.count)
         {
+            // sort all highlightedMatches so they're in the same order as they would be in an inorder traversal of the DOM
+            [highlightedMatches sortUsingComparator:^NSComparisonResult(DHMatchedText *a, DHMatchedText *b) {
+                NSRange ar = [a.foundRanges.firstObject rangeValue];
+                NSRange br = [b.foundRanges.firstObject rangeValue];
+                if (ar.location < br.location) {
+                    return NSOrderedAscending;
+                } else if (ar.location > br.location) {
+                    return NSOrderedDescending;
+                } else if (ar.length < br.length) {
+                    return NSOrderedAscending;
+                } else if (ar.length > br.length) {
+                    return NSOrderedDescending;
+                } else {
+                    return NSOrderedSame;
+                }
+            }];
+            
             [self tryToGuessSelection:currentQuery.selectionAfterHighlight];
             self.scrollHighlighter = [DHScrollbarHighlighter highlighterWithWebView:self andMatches:highlightedMatches];
-            return;
+            return YES; // all done
         }
         DHMatchedText *last = [matches lastObject];
         [highlightedMatches addObject:last];
@@ -340,8 +451,11 @@
         {
             [last highlightDOMNode];
         }
-    }
-    self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f target:self selector:@selector(timeredHighlightOfMatches:) userInfo:matches repeats:NO];
+        return NO; // more work to do
+    }, ^{
+        self.workerTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f target:self selector:@selector(timeredHighlightOfMatches:) userInfo:matches repeats:NO];
+    });
+    
 }
 
 - (void)invalidateTimers
@@ -510,6 +624,7 @@
 - (void)dealloc
 {
     [self invalidateTimers];
+    [focusQuery release];
     [currentQuery release];
     [highlightedMatches release];
     [matchedTexts release];
